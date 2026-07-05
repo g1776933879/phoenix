@@ -1,5 +1,6 @@
 package com.your.agent.spring.gateway;
 
+import com.your.agent.core.commands.SlashCommand;
 import com.your.agent.core.loop.ReActEngine;
 import com.your.agent.core.model.AgentResponse;
 import com.your.agent.core.llm.StreamCallback;
@@ -32,17 +33,22 @@ public class RestGateway {
         log.info("RestGateway+Sessions initialized");
     }
 
-    // ===== 对话 =====
+    // ===== 对话（支持斜杠命令） =====
     @PostMapping("/agent/chat")
     public ResponseEntity<Map<String, Object>> chat(@RequestBody Map<String, String> request) {
         String content = request.get("content");
         if (content == null || content.trim().isEmpty())
             return ResponseEntity.badRequest().body(Map.of("error", "content is required"));
+
+        // 处理斜杠命令
+        if (SlashCommand.isSlashCommand(content)) {
+            return handleSlashCommand(content);
+        }
+
         long start = System.currentTimeMillis();
         try {
             sessionManager.saveMessage("user", content, null);
             AgentResponse response = reActEngine.run(content);
-            // 持久化保存对话
             for (String step : response.getIntermediateSteps()) {
                 if (step.startsWith("[Action]")) sessionManager.saveMessage("tool", step, null);
             }
@@ -57,6 +63,28 @@ public class RestGateway {
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(Map.of("error", "Internal error: " + e.getMessage()));
         }
+    }
+
+    private ResponseEntity<Map<String, Object>> handleSlashCommand(String text) {
+        String[] parts = text.substring(1).split("\\s+", 2);
+        String cmdName = parts[0].toLowerCase();
+        String args = parts.length > 1 ? parts[1] : "";
+
+        SlashCommand cmd = SlashCommand.find(cmdName);
+        if (cmd == null) {
+            return ResponseEntity.ok(Map.of("content", "❌ 未知命令: /" + cmdName + "\n发送 /help 查看可用命令"));
+        }
+
+        String result = cmd.executor().execute(args);
+        switch (cmdName) {
+            case "reset" -> { reActEngine.resetConversation(); result = "🔄 对话已重置"; }
+            case "clear" -> result = "[CLEAR]";
+        }
+
+        sessionManager.saveMessage("user", text, null);
+        sessionManager.saveMessage("assistant", result, null);
+        return ResponseEntity.ok(Map.of("content", result, "iterations", 0, "durationMs", 0, "truncated", false,
+                "sessionId", sessionManager.getCurrentSessionId()));
     }
 
     // ===== 会话管理 =====

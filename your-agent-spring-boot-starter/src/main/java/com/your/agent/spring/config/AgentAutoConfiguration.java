@@ -2,6 +2,7 @@ package com.your.agent.spring.config;
 
 import com.your.agent.core.loop.ReActEngine;
 import com.your.agent.core.mcp.McpRegistry;
+import com.your.agent.core.memory.AgentsConfig;
 import com.your.agent.core.memory.CoreMemory;
 import com.your.agent.core.memory.LongTermStore;
 import com.your.agent.core.memory.SkillMemory;
@@ -69,18 +70,25 @@ public class AgentAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(AgentsConfig.class)
+    public AgentsConfig agentsConfig() {
+        return new AgentsConfig();
+    }
+
+    @Bean
     @Lazy
     @ConditionalOnMissingBean(ReActEngine.class)
     public ReActEngine reActEngine(
             ModelProvider modelProvider,
-            SpringToolRegistry toolRegistry
+            SpringToolRegistry toolRegistry,
+            AgentsConfig agentsConfig
     ) {
         AgentProperties.ReAct reactConfig = properties.getReact();
         return new ReActEngine(
                 modelProvider,
                 toolRegistry,
                 reactConfig.getMaxIterations(),
-                null
+                agentsConfig.getSystemPrompt()
         );
     }
 
