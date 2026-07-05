@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.your</groupId>
+        <artifactId>phoenix</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>your-agent-channel-telegram</artifactId>
+    <packaging>jar</packaging>
+    <name>凤凰 :: Channel Telegram</name>
+    <description>Telegram Bot 渠道接入，在手机上跟凤凰聊天</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.your</groupId>
+            <artifactId>your-agent-spring-boot-starter</artifactId>
+        </dependency>
+
+        <!-- Telegram Bot API -->
+        <dependency>
+            <groupId>org.telegram</groupId>
+            <artifactId>telegrambots-spring-boot-starter</artifactId>
+            <version>6.9.7.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+    </dependencies>
+</project>

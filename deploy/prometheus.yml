@@ -1,0 +1,18 @@
+# ========================================
+# Prometheus 监控配置
+# ========================================
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'phoenix'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['agent:8080']
+        labels:
+          application: '凤凰AI-Agent'
+
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']

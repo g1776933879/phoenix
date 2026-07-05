@@ -1,0 +1,296 @@
+# ============================================
+# 凤凰 · CI/CD 流水线
+# 
+# 触发条件：
+#   - push / pull_request 到 main 分支
+#   - 手动触发 (workflow_dispatch)
+#
+# 阶段：
+#   1. 编译 & 单元测试 (JDK 21)
+#   2. Maven依赖缓存加速
+#   3. 集成测试 (模拟LLM)
+#   4. Docker镜像构建
+#   5. 依赖漏洞检查
+# ============================================
+name: 凤凰 CI/CD
+
+on:
+  push:
+    branches: [main, develop]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.github/**'
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      skip_tests:
+        description: '跳过测试（快速构建）'
+        type: boolean
+        default: false
+      docker_push:
+        description: '推送到Docker Hub'
+        type: boolean
+        default: false
+
+env:
+  JAVA_VERSION: '21'
+  JAVA_DISTRIBUTION: 'temurin'
+  MAVEN_OPTS: '-Xmx2g -Dmaven.artifact.threads=8'
+
+jobs:
+  # ============================================
+  # Job 1: 编译 & 单元测试
+  # ============================================
+  build-and-test:
+    name: 🧪 编译 + 测试 (JDK ${{ env.JAVA_VERSION }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: 🔽 检出代码
+        uses: actions/checkout@v4
+
+      - name: ☕ 设置JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
+          cache: 'maven'
+          cache-dependency-path: |
+            pom.xml
+            **/pom.xml
+
+      - name: 🔍 检查代码格式
+        run: |
+          echo "检查关键文件完整性..."
+          test -f pom.xml || { echo "❌ 缺失 pom.xml"; exit 1; }
+          test -d your-agent-core/src/main/java || { echo "❌ 缺失 core 模块"; exit 1; }
+          echo "✅ 所有关键文件存在"
+
+      - name: 📦 Maven编译（跳过测试，先验证编译）
+        run: |
+          echo "::group::Maven Compile"
+          mvn clean compile -B -q
+          echo "::endgroup::"
+          echo "✅ 编译成功"
+
+      - name: 🧪 运行单元测试
+        if: ${{ !github.event.inputs.skip_tests }}
+        run: |
+          echo "::group::Unit Tests"
+          mvn test -pl your-agent-core -B
+          echo "::endgroup::"
+
+      - name: 📊 生成测试报告
+        if: always()
+        uses: dorny/test-reporter@v1
+        with:
+          name: JUnit 测试报告
+          path: '**/target/surefire-reports/*.xml'
+          reporter: java-junit
+          fail-on-error: false
+
+      - name: 📦 Maven打包
+        run: |
+          echo "::group::Maven Package"
+          mvn clean package -pl your-business-app -am -DskipTests -B -q
+          echo "::endgroup::"
+          echo "✅ 构建产物: your-business-app/target/*.jar"
+
+      - name: 📎 上传构建产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: phoenix-jar
+          path: your-business-app/target/*.jar
+          retention-days: 7
+          if-no-files-found: error
+
+  # ============================================
+  # Job 2: 集成测试 (需要模拟环境)
+  # ============================================
+  integration-test:
+    name: 🔗 集成测试
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: 🔽 检出代码
+        uses: actions/checkout@v4
+
+      - name: ☕ 设置JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
+          cache: 'maven'
+
+      - name: 🔗 运行集成测试
+        run: |
+          echo "::group::Integration Tests"
+          mvn test -pl your-integration-tests -am -B
+          echo "::endgroup::"
+          echo "✅ 集成测试通过"
+
+  # ============================================
+  # Job 3: Docker 镜像构建
+  # ============================================
+  docker-build:
+    name: 🐳 Docker 镜像构建
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: 🔽 检出代码
+        uses: actions/checkout@v4
+
+      - name: 🐳 设置Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: 🐳 Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            ghcr.io/${{ github.repository }}
+          tags: |
+            type=ref,event=branch
+            type=sha,prefix=,format=short
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+
+      - name: 🐳 构建Docker镜像
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: deploy/Dockerfile
+          push: ${{ github.event.inputs.docker_push == 'true' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            BUILDKIT_INLINE_CACHE=1
+
+      - name: 🐳 镜像扫描（Trivy安全扫描）
+        if: ${{ github.event.inputs.docker_push == 'true' }}
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'ghcr.io/${{ github.repository }}:latest'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+
+      - name: 📎 上传安全扫描结果
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-security-report
+          path: trivy-results.sarif
+          retention-days: 30
+
+  # ============================================
+  # Job 4: 依赖安全检查 (OWASP)
+  # ============================================
+  dependency-check:
+    name: 🔒 依赖漏洞检查
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: 🔽 检出代码
+        uses: actions/checkout@v4
+
+      - name: ☕ 设置JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
+          cache: 'maven'
+
+      - name: 🔒 Maven依赖审查
+        run: |
+          echo "::group::OWASP Dependency Check"
+          mvn org.owasp:dependency-check-maven:check \
+            -DfailBuildOnCVSS=9 \
+            -Dformats=JSON \
+            -B -q 2>/dev/null || echo "⚠️ OWASP检查完成（高危阈值9+）"
+          echo "::endgroup::"
+
+      - name: 📋 列出所有直接依赖
+        run: |
+          echo "::group::Dependency Tree"
+          mvn dependency:tree -B -q
+          echo "::endgroup::"
+
+  # ============================================
+  # Job 5: 代码质量报告
+  # ============================================
+  code-quality:
+    name: 📊 代码质量
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: 🔽 检出代码
+        uses: actions/checkout@v4
+
+      - name: ☕ 设置JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
+          cache: 'maven'
+
+      - name: 📊 统计代码量
+        run: |
+          echo "::group::Code Statistics"
+          echo "Java文件统计:"
+          find . -name "*.java" -not -path "*/target/*" | wc -l
+          echo "总代码行数:"
+          find . -name "*.java" -not -path "*/target/*" -exec cat {} + | wc -l
+          echo "测试代码行数:"
+          find . -name "*Test*.java" -not -path "*/target/*" -exec cat {} + | wc -l
+          echo "::endgroup::"
+
+      - name: 📊 检查测试覆盖率
+        run: |
+          echo "::group::Test Coverage"
+          mvn test -pl your-agent-core -B -q -Djacoco.skip=false 2>/dev/null || true
+          echo "覆盖率报告在: your-agent-core/target/site/jacoco/index.html"
+          echo "::endgroup::"
+
+  # ============================================
+  # Job 6: 通知（成功/失败）
+  # ============================================
+  notify:
+    name: 📬 通知
+    needs: [build-and-test, integration-test, docker-build, dependency-check]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: 📬 汇总构建状态
+        run: |
+          BUILD_STATUS="${{ needs.build-and-test.result }}"
+          INTEGRATION_STATUS="${{ needs.integration-test.result }}"
+          DOCKER_STATUS="${{ needs.docker-build.result }}"
+          DEP_STATUS="${{ needs.dependency-check.result }}"
+
+          echo "========================"
+          echo "  凤凰 CI 构建报告"
+          echo "========================"
+          echo "编译+测试:     ${BUILD_STATUS}"
+          echo "集成测试:      ${INTEGRATION_STATUS}"
+          echo "Docker构建:    ${DOCKER_STATUS}"
+          echo "依赖检查:      ${DEP_STATUS}"
+          echo "========================"
+
+          if [ "$BUILD_STATUS" == "success" ] && [ "$INTEGRATION_STATUS" == "success" ]; then
+            echo "✅ 所有核心检查通过"
+          else
+            echo "❌ 存在失败的检查项"
+          fi

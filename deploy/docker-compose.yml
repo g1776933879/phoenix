@@ -1,0 +1,98 @@
+version: '3.8'
+
+services:
+  # =============================================
+  # 凤凰 - 企业级AI Agent 生产部署
+  # =============================================
+  agent:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    container_name: phoenix
+    ports:
+      - "8080:8080"
+    environment:
+      # LLM配置
+      - YOUR_AGENT_LLM_PROVIDER=openai
+      - YOUR_AGENT_LLM_BASE_URL=https://api.openai.com/v1
+      - YOUR_AGENT_LLM_API_KEY=${OPENAI_API_KEY}
+      - YOUR_AGENT_LLM_MODEL_NAME=gpt-4o
+      - YOUR_AGENT_LLM_MAX_TOKENS=4096
+      - YOUR_AGENT_LLM_TEMPERATURE=0.7
+
+      # ReAct配置
+      - YOUR_AGENT_REACT_MAX_ITERATIONS=10
+
+      # 沙箱配置
+      - YOUR_AGENT_SANDBOX_TYPE=docker
+      - YOUR_AGENT_SANDBOX_DOCKER_IMAGE=ubuntu:22.04
+      - YOUR_AGENT_SANDBOX_TIMEOUT_SECONDS=30
+
+      # WebSocket
+      - YOUR_AGENT_WEBSOCKET_ENDPOINT=/ws/agent
+      - YOUR_AGENT_WEBSOCKET_ALLOWED_ORIGINS=*
+
+      # JVM参数
+      - JAVA_OPTS=-Xms512m -Xmx2g -XX:+UseZGC
+    volumes:
+      # 持久化长程记忆数据
+      - agent-data:/root/.agent
+      # 挂载技能库
+      - ../your-agent-skill-repo/skills:/app/skills
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/agent/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "3"
+    networks:
+      - agent-network
+
+  # =============================================
+  # 可选：Prometheus + Grafana 监控栈
+  # =============================================
+  prometheus:
+    image: prom/prometheus:v2.53.0
+    container_name: agent-prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    ports:
+      - "9090:9090"
+    restart: unless-stopped
+    networks:
+      - agent-network
+    profiles:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana:11.1.0
+    container_name: agent-grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+    restart: unless-stopped
+    networks:
+      - agent-network
+    profiles:
+      - monitoring
+
+volumes:
+  agent-data:
+  prometheus-data:
+  grafana-data:
+
+networks:
+  agent-network:
+    driver: bridge

@@ -1,0 +1,91 @@
+# 凤凰 - 企业级AI Agent应用
+# ==============================
+# 启动配置
+
+server:
+  port: 8080
+
+spring:
+  application:
+    name: phoenix
+  main:
+    allow-circular-references: true
+
+your:
+  agent:
+    # LLM模型配置
+    llm:
+      provider: openai          # openai | ollama | azure
+      base-url: https://api.openai.com/v1
+      api-key: ${OPENAI_API_KEY:sk-your-key-here}
+      model-name: gpt-4o
+      max-tokens: 4096
+      temperature: 0.7
+      timeout-seconds: 60
+
+    # ReAct引擎配置
+    react:
+      max-iterations: 10
+
+    # 安全沙箱配置
+    sandbox:
+      type: none                 # none | docker
+
+    # WebSocket配置
+    websocket:
+      endpoint: /ws/agent
+      allowed-origins: "*"
+
+---
+
+# 开发环境配置
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+your:
+  agent:
+    llm:
+      provider: openai
+      base-url: http://localhost:11434/v1  # Ollama本地地址
+      model-name: qwen2:7b
+      api-key: ollama
+    sandbox:
+      type: none
+
+---
+# 生产环境配置
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+your:
+  agent:
+    sandbox:
+      type: docker
+      docker-image: ubuntu:22.04
+      timeout-seconds: 30
+
+---
+
+# SenseNova 配置 (token.sensenova.cn)
+# 启动: mvn spring-boot:run -pl your-business-app -Dspring-boot.run.profiles=sensenova
+spring:
+  config:
+    activate:
+      on-profile: sensenova
+
+your:
+  agent:
+    llm:
+      provider: openai
+      base-url: https://token.sensenova.cn/v1
+      api-key: ${SENSENOVA_API_KEY:}
+      model-name: deepseek-v4-flash       # 推荐: deepseek-v4-flash (快)
+      # model-name: sensenova-6.7-flash-lite  # 轻量多模态
+      # model-name: glm-5.2                   # 智谱GLM 1M上下文
+      max-tokens: 32768
+      temperature: 0.7
+      timeout-seconds: 120

@@ -1,0 +1,203 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"><title>凤凰</title><style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0b0b12;--s:rgba(255,255,255,0.03);--s2:rgba(255,255,255,0.06);--b:rgba(255,255,255,0.07);--t:#eaeaf0;--t2:#7a7a92;--a:#6c63ff;--a2:#00d4aa;--sc:#34c759;--fs:clamp(12px,2vw,14px);--fs2:clamp(10px,1.5vw,12px)}
+body{font-family:-apple-system,BlinkMacSystemFont,'Inter',sans-serif;background:var(--bg);color:var(--t);min-height:100dvh;display:flex;font-size:var(--fs);overflow:hidden}
+#sd{width:clamp(52px,6vw,200px);background:var(--s);border-right:1px solid var(--b);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;transition:width .2s;z-index:20}
+#sd:hover,#sd:focus-within{width:clamp(180px,20vw,240px)}
+#sd .ni{white-space:nowrap;overflow:hidden}
+#sd .ni span:last-child{opacity:0;transition:opacity .2s}
+#sd:hover .ni span:last-child,#sd:focus-within .ni span:last-child{opacity:1}
+.logo{padding:clamp(8px,1vw,14px);border-bottom:1px solid var(--b);text-align:center;font-size:clamp(16px,2.5vw,20px)}
+.ni{display:flex;align-items:center;gap:clamp(6px,0.8vw,10px);padding:clamp(6px,0.8vw,10px);margin:2px clamp(4px,0.5vw,8px);border-radius:8px;font-size:var(--fs);color:var(--t2);cursor:pointer;transition:all .15s}
+.ni:hover{background:var(--s2);color:var(--t)}
+.ni.act{background:rgba(108,99,255,0.12);color:var(--a)}
+.sf{margin-top:auto;padding:clamp(6px,0.8vw,10px);text-align:center;font-size:var(--fs2);color:var(--t2);border-top:1px solid var(--b)}
+.mn{flex:1;display:flex;flex-direction:column;min-width:0}
+.tc{flex:1;overflow-y:auto;padding:clamp(8px,1.2vw,16px) clamp(10px,1.5vw,20px);display:none}
+.tc.act{display:flex;flex-direction:column}
+.chat{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:6px;padding:4px 0}
+.ms{max-width:90%;padding:clamp(6px,0.8vw,10px) clamp(8px,1vw,12px);border-radius:12px;font-size:var(--fs);line-height:1.5;animation:fi .2s}
+.ms.u{align-self:flex-end;background:rgba(108,99,255,0.15);border:1px solid rgba(108,99,255,0.2);border-bottom-right-radius:3px}
+.ms.a{align-self:flex-start;background:var(--s);border:1px solid var(--b);border-bottom-left-radius:3px}
+.ms .bad{font-size:var(--fs2);opacity:.5;margin-bottom:2px}
+@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.inr{display:flex;gap:6px;padding:clamp(6px,0.8vw,10px) 0 2px;border-top:1px solid var(--b)}
+.inr textarea{flex:1;background:var(--s);border:1px solid var(--b);border-radius:10px;padding:clamp(6px,0.8vw,10px) clamp(8px,1vw,12px);color:var(--t);font-size:var(--fs);font-family:inherit;resize:none;min-height:36px;max-height:80px;outline:none}
+.inr textarea:focus{border-color:var(--a)}
+.inr button{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--a),var(--a2));border:none;color:#fff;font-size:16px;cursor:pointer;flex-shrink:0}
+.cg{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
+.c{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:clamp(10px,1.2vw,16px)}
+.c h3{font-size:var(--fs);font-weight:600;margin-bottom:8px}
+.rw{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.03);font-size:var(--fs)}
+.rw:last-child{border:none}
+.lb{color:var(--t2)}.va{font-weight:500}
+.tg{display:inline-block;padding:1px 6px;border-radius:4px;font-size:var(--fs2);background:rgba(52,199,89,0.1);color:var(--sc)}
+.fd{margin-bottom:8px}
+.fd label{font-size:var(--fs2);color:var(--t2);display:block;margin-bottom:2px}
+.fd input,.fd select{width:100%;background:var(--s);border:1px solid var(--b);border-radius:6px;padding:6px 10px;color:var(--t);font-size:var(--fs);outline:none}
+.btn{padding:6px 14px;border-radius:6px;border:none;font-size:var(--fs2);cursor:pointer;background:var(--a);color:#fff}
+.btn-s{background:var(--s2);color:var(--t)}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(20,20,31,0.95);border:1px solid var(--b);border-radius:8px;padding:8px 16px;font-size:var(--fs2);z-index:999;opacity:0;transition:all .3s;pointer-events:none}
+.toast.sh{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(max-width:600px){#sd{width:48px}#sd:hover{width:160px}}
+</style></head><body>
+
+<aside id="sd">
+<div class="logo">⚡</div>
+<div class="ni act" onclick="go('chat')"><span>💬</span><span>对话</span></div>
+<div class="ni" onclick="go('sessions')"><span>📋</span><span>历史</span></div>
+<div class="ni" onclick="go('tools')"><span>🔧</span><span>工具</span></div>
+<div class="ni" onclick="go('model')"><span>🤖</span><span>模型</span></div>
+<div class="ni" onclick="go('channels')"><span>📡</span><span>渠道</span></div>
+<div class="ni" onclick="go('evolve')"><span>🧬</span><span>进化</span></div>
+<div class="ni" onclick="go('settings')"><span>⚙️</span><span>设置</span></div>
+<div class="sf"><span id="st">●</span></div>
+</aside>
+
+<div class="mn">
+
+<!-- Chat -->
+<div class="tc act" id="p-chat">
+<div style="display:flex;gap:6px;align-items:center;margin-bottom:6px;flex-shrink:0">
+  <span style="font-size:var(--fs2);color:var(--t2)">会话: <span id="curSid">-</span></span>
+  <button class="btn btn-s" onclick="newSess()" style="margin-left:auto">➕ 新对话</button>
+</div>
+<div class="chat" id="msgs"></div>
+<div class="inr"><textarea id="inp" rows="1" placeholder="发消息..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();snd()}"></textarea><button onclick="snd()">➤</button></div>
+</div>
+
+<!-- Sessions -->
+<div class="tc" id="p-sessions">
+<div style="display:flex;gap:6px;margin-bottom:8px;align-items:center">
+  <span style="font-weight:600">📋 对话历史</span>
+  <button class="btn" onclick="newSess()" style="margin-left:auto">➕ 新对话</button>
+</div>
+<div id="sessList" style="display:flex;flex-direction:column;gap:4px"></div>
+</div>
+
+<!-- Tools -->
+<div class="tc" id="p-tools">
+<div class="cg">
+<div class="c"><h3>🔧 工具</h3><div id="toolInfo">加载中...</div></div>
+<div class="c"><h3>🔌 MCP</h3><div id="mcpInfo">-</div></div>
+</div></div>
+
+<!-- Model -->
+<div class="tc" id="p-model">
+<div class="cg">
+<div class="c"><h3>🤖 模型</h3>
+<div class="fd"><label>模型</label><input id="mN" value="deepseek-v4-flash"></div>
+<div class="fd"><label>API</label><input id="mU" value="https://token.sensenova.cn/v1"></div>
+<div class="fd"><label>Key</label><input id="mK" type="password"></div>
+<div style="display:flex;gap:6px"><button class="btn" onclick="svM()">💾</button><button class="btn btn-s" onclick="tstM()">🔍</button></div>
+<div id="mR" style="margin-top:6px;font-size:var(--fs2);color:var(--t2)"></div>
+</div>
+<div class="c"><h3>⚡ 预设</h3>
+<select onchange="qM(this.value)" style="width:100%;background:var(--s);border:1px solid var(--b);border-radius:6px;padding:6px 10px;color:var(--t);font-size:var(--fs);outline:none">
+<option value="">自定义</option><option value="ds">DeepSeek</option><option value="gpt4">GPT-4o</option>
+<option value="claude">Claude 4</option><option value="qwen">Qwen</option><option value="groq">Groq</option>
+</select></div>
+</div></div>
+
+<!-- Channels -->
+<div class="tc" id="p-channels">
+<div class="cg">
+<div class="c"><h3>🌐 Web</h3><div class="rw"><span class="lb">状态</span><span class="va tg">运行中</span></div></div>
+<div class="c"><h3>📱 Telegram</h3><div class="fd"><label>Token</label><input id="tgT" placeholder="123:ABC"></div><button class="btn" onclick="svTG()">保存</button></div>
+</div></div>
+
+<!-- Evolve -->
+<div class="tc" id="p-evolve">
+<div class="cg">
+<div class="c"><h3>🧬 进化</h3><div style="display:flex;gap:6px;margin-bottom:6px"><button class="btn" onclick="ev()">进化</button><button class="btn btn-s" onclick="an()">分析</button></div><div id="eR" style="font-size:var(--fs2);color:var(--t2);white-space:pre-wrap;max-height:200px;overflow-y:auto"></div></div>
+<div class="c"><h3>🛠️ 技能</h3><div class="fd"><label>名称</label><input id="sN" placeholder="code_review"></div><div class="fd"><label>描述</label><input id="sD" placeholder="审查代码"></div><button class="btn" onclick="mkS()">创造</button><div id="sR" style="margin-top:4px;font-size:var(--fs2);color:var(--t2)"></div></div>
+</div></div>
+
+<!-- Settings -->
+<div class="tc" id="p-settings">
+<div class="cg">
+<div class="c"><h3>⚙️ 系统</h3><div class="rw"><span class="lb">引擎</span><span class="va">ReAct v2</span></div><div class="rw"><span class="lb">会话</span><span class="va" id="sessCount">-</span></div><button class="btn btn-s" onclick="rf()" style="margin-top:6px">🔄 刷新</button></div>
+<div class="c"><h3>🚀 CLI</h3><pre style="font-size:var(--fs2);background:rgba(0,0,0,0.2);padding:8px;border-radius:6px;line-height:1.6">bash chat.sh    对话
+bash pmm.sh doctor 诊断</pre></div>
+</div></div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const H=location.protocol+'//'+location.host;
+let bf=false,sid='',msgs=[];
+
+function go(n){document.querySelectorAll('.tc').forEach(e=>e.classList.remove('act'));document.querySelectorAll('.ni').forEach(e=>e.classList.remove('act'));document.getElementById('p-'+n).classList.add('act');document.querySelector(`.ni[onclick*="'${n}'"]`).classList.add('act');if(n==='sessions')loadSess()}
+
+// Chat
+const M=document.getElementById('msgs'),I=document.getElementById('inp');
+function addMsg(t,r){let d=document.createElement('div');d.className='ms '+r;
+  let b=document.createElement('div');b.className='bad';b.textContent={u:'你',a:'凤凰',t:'工具'}[r[0]]||r;d.appendChild(b);
+  let c=document.createElement('div');c.textContent=t;d.appendChild(c);M.appendChild(d);M.scrollTop=M.scrollHeight;return d}
+
+function loadSession(id){
+  sid=id;M.innerHTML='';document.getElementById('curSid').textContent=id;
+  fetch(H+'/api/sessions/'+id).then(r=>r.json()).then(d=>{
+    if(d.messages) d.messages.forEach(m=>addMsg(m.content,m.role==='user'?'u':'a'));
+  }).catch(()=>{});
+}
+
+async function snd(){
+  let t=I.value.trim();if(!t||bf)return;bf=true;I.value='';addMsg(t,'u');
+  let l=addMsg('⏳...','a');
+  try{
+    let r=await fetch(H+'/api/agent/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:t})});
+    let d=await r.json();l.remove();addMsg(d.content||'(空)','a');
+    sid=d.sessionId||sid;document.getElementById('curSid').textContent=sid;
+  }catch(e){l.remove();addMsg('❌ '+e.message,'s')}bf=false;
+}
+
+function newSess(){
+  fetch(H+'/api/sessions',{method:'POST'}).then(r=>r.json()).then(d=>{
+    sid=d.sessionId;M.innerHTML='';document.getElementById('curSid').textContent=sid;
+    toast('✅ 新会话已创建');go('chat');
+  });
+}
+
+// Sessions
+function loadSess(){
+  let el=document.getElementById('sessList');el.innerHTML='⏳ 加载中...';
+  fetch(H+'/api/sessions').then(r=>r.json()).then(list=>{
+    el.innerHTML='';
+    if(list.length===0){el.innerHTML='<div style="color:var(--t2);padding:10px">暂无对话历史</div>';return}
+    document.getElementById('sessCount').textContent=list.length;
+    list.forEach(s=>{
+      let d=document.createElement('div');d.style.cssText='display:flex;align-items:center;gap:6px;padding:8px 10px;border-radius:8px;cursor:pointer;background:var(--s);border:1px solid var(--b);transition:all .15s';
+      d.onmouseover=()=>d.style.background='var(--s2)';d.onmouseout=()=>d.style.background='var(--s)';
+      d.innerHTML=`<span>💬</span><span style="flex:1">${s.title}</span><span style="font-size:var(--fs2);color:var(--t2)">${s.messageCount}条</span>`;
+      d.onclick=()=>{loadSession(s.id);go('chat')};
+      el.appendChild(d);
+    });
+  }).catch(()=>{el.innerHTML='<div style="color:var(--t2)">加载失败</div>'});
+}
+
+// Model
+function svM(){localStorage.setItem('pmm_m',JSON.stringify({n:document.getElementById('mN').value,u:document.getElementById('mU').value,k:document.getElementById('mK').value}));toast('✅ 已保存')}
+async function tstM(){let e=document.getElementById('mR');e.textContent='⏳...';try{let r=await fetch(H+'/api/agent/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:'ping'})});let d=await r.json();e.innerHTML='✅ '+d.content.substring(0,60)}catch(x){e.textContent='❌ '+x.message}}
+function qM(v){const P={'ds':{n:'deepseek-chat',u:'https://api.deepseek.com/v1'},'gpt4':{n:'gpt-4o',u:'https://api.openai.com/v1'},'claude':{n:'claude-sonnet-4',u:'https://api.anthropic.com/v1'},'qwen':{n:'qwen2.5:7b',u:'http://localhost:11434/v1'},'groq':{n:'llama3-70b-8192',u:'https://api.groq.com/openai/v1'}};if(P[v]){document.getElementById('mN').value=P[v].n;document.getElementById('mU').value=P[v].u;toast('⚡ 已切换')}}
+
+// Channels
+function svTG(){let t=document.getElementById('tgT').value.trim();if(!t)return toast('❌ 输入Token');localStorage.setItem('pmm_tg',t);toast('✅ 已保存')}
+
+// Evolve
+async function ev(){let e=document.getElementById('eR');e.textContent='🧬...';try{let r=await fetch(H+'/api/evolution/evolve',{method:'POST'});let d=await r.json();e.textContent=JSON.stringify(d,null,2)}catch(x){e.textContent='❌ '+x.message}}
+async function an(){let e=document.getElementById('eR');e.textContent='🔍...';try{let r=await fetch(H+'/api/evolution/analyze',{method:'POST'});let d=await r.json();e.textContent=JSON.stringify(d,null,2)}catch(x){e.textContent='❌ '+x.message}}
+async function mkS(){let n=document.getElementById('sN').value.trim(),d=document.getElementById('sD').value.trim();if(!n||!d)return toast('❌ 填写');let e=document.getElementById('sR');e.textContent='⏳...';try{let r=await fetch(H+'/api/agent/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:'创建技能 '+n+'：'+d})});let o=await r.json();e.textContent=o.content}catch(x){e.textContent='❌ '+x.message}}
+
+// Settings
+async function rf(){try{let r=await fetch(H+'/api/agent/health');let d=await r.json();document.getElementById('st').textContent='●';document.getElementById('st').style.color='var(--sc)';sid=d.sessionId||sid;document.getElementById('curSid').textContent=sid;toast('🔄 已刷新')}catch(e){document.getElementById('st').style.color='#ff453a';toast('❌ 离线')}}
+
+function toast(m){let t=document.getElementById('toast');t.textContent=m;t.classList.add('sh');setTimeout(()=>t.classList.remove('sh'),2000)}
+
+// Init
+rf();setInterval(rf,30000);
+fetch(H+'/api/sessions').then(r=>r.json()).then(list=>{if(list.length>0){loadSession(list[0].id);document.getElementById('sessCount').textContent=list.length}});
+</script>
+</body></html>
