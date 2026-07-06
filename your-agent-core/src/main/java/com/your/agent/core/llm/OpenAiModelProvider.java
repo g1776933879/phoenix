@@ -16,6 +16,7 @@ import okhttp3.sse.EventSources;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
@@ -31,6 +32,29 @@ public class OpenAiModelProvider implements ModelProvider {
     private final String modelNameInput;
     private final int maxTokens;
     private final double temperature;
+    private static final AtomicInteger KEY_INDEX = new AtomicInteger(0);
+    private static final List<String> KEY_CHAIN = new ArrayList<>();
+
+    static {
+        String k1 = System.getenv("SENSENOVA_API_KEY");
+        String k2 = System.getenv("PHOENIX_API_KEY_2");
+        String k3 = System.getenv("PHOENIX_API_KEY_3");
+        String k4 = System.getenv("PHOENIX_API_KEY_4");
+        String k5 = System.getenv("PHOENIX_API_KEY_5");
+        if (k1 != null && !k1.isEmpty()) KEY_CHAIN.add(k1);
+        if (k2 != null && !k2.isEmpty()) KEY_CHAIN.add(k2);
+        if (k3 != null && !k3.isEmpty()) KEY_CHAIN.add(k3);
+        if (k4 != null && !k4.isEmpty()) KEY_CHAIN.add(k4);
+        if (k5 != null && !k5.isEmpty()) KEY_CHAIN.add(k5);
+    }
+
+    private String getEffectiveKey() {
+        if (KEY_CHAIN.isEmpty()) return apiKey;
+        int idx = KEY_INDEX.get() % KEY_CHAIN.size();
+        String key = KEY_CHAIN.get(idx);
+        if (idx > 0) log.info("Using key {} of {} (index={})", idx + 1, KEY_CHAIN.size(), idx);
+        return key;
+    }
 
     @Builder
     public OpenAiModelProvider(String baseUrl, String apiKey, String modelName, int maxTokens, double temperature, long timeoutSeconds) {
@@ -49,7 +73,7 @@ public class OpenAiModelProvider implements ModelProvider {
     public Message chat(List<Message> messages, List<String> tools) {
         try {
             String jsonBody = MAPPER.writeValueAsString(buildRequestBody(messages, tools, false));
-            Request request = new Request.Builder().url(baseUrl + "/chat/completions").addHeader("Content-Type", "application/json").addHeader("Authorization", "Bearer " + apiKey).post(RequestBody.create(jsonBody, JSON)).build();
+            Request request = new Request.Builder().url(baseUrl + "/chat/completions").addHeader("Content-Type", "application/json").addHeader("Authorization", "Bearer " + getEffectiveKey()).post(RequestBody.create(jsonBody, JSON)).build();
             log.debug("Sending sync request: model={}, messages={}", modelNameInput, messages.size());
             long start = System.currentTimeMillis();
             try (Response response = httpClient.newCall(request).execute()) {
@@ -73,7 +97,7 @@ public class OpenAiModelProvider implements ModelProvider {
     public void chatStream(List<Message> messages, List<String> tools, StreamCallback callback) {
         try {
             String jsonBody = MAPPER.writeValueAsString(buildRequestBody(messages, tools, true));
-            Request request = new Request.Builder().url(baseUrl + "/chat/completions").addHeader("Content-Type", "application/json").addHeader("Authorization", "Bearer " + apiKey).post(RequestBody.create(jsonBody, JSON)).build();
+            Request request = new Request.Builder().url(baseUrl + "/chat/completions").addHeader("Content-Type", "application/json").addHeader("Authorization", "Bearer " + getEffectiveKey()).post(RequestBody.create(jsonBody, JSON)).build();
             log.debug("Sending streaming request: model={}, messages={}", modelNameInput, messages.size());
             AtomicReference<Map<String, StringBuilder>> toolCallBuffers = new AtomicReference<>(new HashMap<>());
             AtomicReference<String> finishReason = new AtomicReference<>(null);
