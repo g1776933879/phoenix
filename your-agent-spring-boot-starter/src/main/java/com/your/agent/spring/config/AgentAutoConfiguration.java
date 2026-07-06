@@ -7,6 +7,8 @@ import com.your.agent.core.memory.CoreMemory;
 import com.your.agent.core.memory.LongTermStore;
 import com.your.agent.core.memory.SkillMemory;
 import com.your.agent.core.memory.UserProfile;
+import com.your.agent.core.sandbox.DockerSandbox;
+import com.your.agent.core.sandbox.ExecPolicy;
 import com.your.agent.spring.gateway.WebSocketGateway;
 import com.your.agent.spring.sandbox.ApprovalReviewer;
 import com.your.agent.spring.sandbox.SandboxStrategy;
@@ -123,11 +125,20 @@ public class AgentAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(ExecPolicy.class)
+    public ExecPolicy execPolicy() {
+        return new ExecPolicy();
+    }
+
+    @Bean
     @ConditionalOnMissingBean(SandboxStrategy.class)
-    @ConditionalOnProperty(prefix = "your.agent.sandbox", name = "type", havingValue = "docker")
-    public SandboxStrategy dockerSandbox() {
+    @ConditionalOnProperty(prefix = "your.agent.sandbox", name = "type", havingValue = "docker", matchIfMissing = false)
+    public SandboxStrategy dockerSandboxStrategy() {
+        AgentProperties.Sandbox sb = properties.getSandbox();
+        DockerSandbox sandbox = new DockerSandbox(sb.getDockerImage(), sb.getTimeoutSeconds());
         return command -> {
-            throw new UnsupportedOperationException("Docker sandbox not yet implemented");
+            var result = sandbox.execute(command);
+            return result.output();
         };
     }
 
