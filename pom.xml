@@ -22,6 +22,8 @@
         <module>your-agent-channel-telegram</module>
         <module>your-agent-channel-wecom</module>
         <module>your-agent-channel-discord</module>
+        <module>your-agent-channel-slack</module>
+        <module>your-agent-channel-signal</module>
     </modules>
 
     <properties>
