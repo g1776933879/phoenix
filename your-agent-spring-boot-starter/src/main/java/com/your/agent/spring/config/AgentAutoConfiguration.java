@@ -6,6 +6,7 @@ import com.your.agent.core.mcp.McpRegistry;
 import com.your.agent.core.memory.AgentsConfig;
 import com.your.agent.core.memory.CoreMemory;
 import com.your.agent.core.memory.LongTermStore;
+import com.your.agent.core.memory.SkillImprover;
 import com.your.agent.core.memory.SkillMemory;
 import com.your.agent.core.memory.UserProfile;
 import com.your.agent.core.sandbox.DockerSandbox;
@@ -154,6 +155,12 @@ public class AgentAutoConfiguration {
     @ConditionalOnMissingBean(CronScheduler.class)
     public CronScheduler cronScheduler(ReActEngine reActEngine) {
         return new CronScheduler(reActEngine);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(SkillImprover.class)
+    public SkillImprover skillImprover(SkillMemory skillMemory) {
+        return new SkillImprover(skillMemory);
     }
 
     @Bean

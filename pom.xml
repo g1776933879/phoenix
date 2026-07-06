@@ -28,6 +28,7 @@
         <module>your-agent-channel-whatsapp</module>
         <module>your-agent-channel-feishu</module>
         <module>your-agent-channel-dingtalk</module>
+        <module>your-agent-channel-email</module>
     </modules>
 
     <properties>
