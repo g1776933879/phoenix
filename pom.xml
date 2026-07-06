@@ -21,6 +21,7 @@
         <module>your-evolution-core</module>
         <module>your-agent-channel-telegram</module>
         <module>your-agent-channel-wecom</module>
+        <module>your-agent-channel-discord</module>
     </modules>
 
     <properties>
