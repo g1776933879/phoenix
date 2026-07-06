@@ -1,5 +1,6 @@
 package com.your.agent.spring.config;
 
+import com.your.agent.core.cron.CronScheduler;
 import com.your.agent.core.loop.ReActEngine;
 import com.your.agent.core.mcp.McpRegistry;
 import com.your.agent.core.memory.AgentsConfig;
@@ -9,6 +10,7 @@ import com.your.agent.core.memory.SkillMemory;
 import com.your.agent.core.memory.UserProfile;
 import com.your.agent.core.sandbox.DockerSandbox;
 import com.your.agent.core.sandbox.ExecPolicy;
+import com.your.agent.core.subagent.SubAgentManager;
 import com.your.agent.spring.gateway.WebSocketGateway;
 import com.your.agent.spring.sandbox.ApprovalReviewer;
 import com.your.agent.spring.sandbox.SandboxStrategy;
@@ -146,6 +148,18 @@ public class AgentAutoConfiguration {
     @ConditionalOnMissingBean(McpRegistry.class)
     public McpRegistry mcpRegistry() {
         return new McpRegistry();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(CronScheduler.class)
+    public CronScheduler cronScheduler(ReActEngine reActEngine) {
+        return new CronScheduler(reActEngine);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(SubAgentManager.class)
+    public SubAgentManager subAgentManager(SpringToolRegistry toolRegistry) {
+        return new SubAgentManager(toolRegistry);
     }
 
     @Bean
