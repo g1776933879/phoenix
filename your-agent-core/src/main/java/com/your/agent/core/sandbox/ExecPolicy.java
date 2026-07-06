@@ -12,7 +12,7 @@ public class ExecPolicy {
         addRule(PolicyRule.deny("rm -rf /", "禁止删除根目录"));
         addRule(PolicyRule.deny("mkfs.*", "禁止格式化磁盘"));
         addRule(PolicyRule.deny("dd if=.*of=/dev/.*", "禁止直接写设备"));
-        addRule(PolicyRule.deny(":(){ :|:& };:", "禁止 fork 炸弹"));
+        addRule(PolicyRule.deny(":\\Q(){ :|:& };:\\E", "禁止 fork 炸弹"));
         addRule(PolicyRule.deny("chmod -R 777 /", "禁止开放整个系统权限"));
         addRule(PolicyRule.deny("> /dev/sda", "禁止直接写入磁盘"));
         addRule(PolicyRule.approveIf("curl.*\\|.*sh", "需要审批的远程脚本执行"));
