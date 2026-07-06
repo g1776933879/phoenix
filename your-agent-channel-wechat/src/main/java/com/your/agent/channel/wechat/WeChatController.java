@@ -2,57 +2,62 @@ package com.your.agent.channel.wechat;
 
 import com.your.agent.core.loop.ReActEngine;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * 微信扫码连接REST端点 —— 提供二维码展示和连接状态查询。
- */
 @Slf4j
 @RestController
 @RequestMapping("/api/channel/wechat")
 public class WeChatController {
 
-    private final ConcurrentHashMap<String, String> linkTokens = new ConcurrentHashMap<>();
     private final WeChatBridge weChatBridge;
-    private final ReActEngine reActEngine;
 
-    public WeChatController(WeChatBridge weChatBridge, ReActEngine reActEngine) {
+    public WeChatController(WeChatBridge weChatBridge) {
         this.weChatBridge = weChatBridge;
-        this.reActEngine = reActEngine;
     }
 
     @GetMapping("/qr")
-    public ResponseEntity<Map<String, Object>> getQRCode() {
-        String token = UUID.randomUUID().toString();
-        linkTokens.put(token, "pending");
-        // 返回二维码图片（实际使用时替换为itchat生成的二维码路径）
+    public ResponseEntity<Map<String, Object>> getQR() {
+        String path = weChatBridge.getLoginQrPath();
+        boolean connected = weChatBridge.isConnected();
         return ResponseEntity.ok(Map.of(
-            "token", token,
-            "status", "pending",
-            "message", "请使用微信扫描下方二维码登录",
-            "qrImage", "/api/channel/wechat/qr/image"
+            "connected", connected,
+            "qrPath", path,
+            "status", weChatBridge.getStatusMessage(),
+            "hasQR", path != null && !path.isEmpty(),
+            "qrUrl", path != null && !path.isEmpty() ? "/api/channel/wechat/qr/image" : null
         ));
     }
 
     @GetMapping("/qr/image")
-    public ResponseEntity<Map<String, Object>> getQRImage() {
-        return ResponseEntity.ok(Map.of(
-            "qrPath", weChatBridge.getLoginQrPath(),
-            "note", "手机微信扫码，或浏览器打开链接登录"
-        ));
+    public ResponseEntity<Resource> getQRImage() {
+        String path = weChatBridge.getLoginQrPath();
+        if (path == null || path.isEmpty() || !Files.exists(Paths.get(path))) {
+            return ResponseEntity.notFound().build();
+        }
+        try {
+            Resource resource = new FileSystemResource(path);
+            return ResponseEntity.ok()
+                .contentType(MediaType.IMAGE_PNG)
+                .body(resource);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/status")
-    public ResponseEntity<Map<String, Object>> getStatus() {
+    public ResponseEntity<Map<String, Object>> status() {
         return ResponseEntity.ok(Map.of(
             "connected", weChatBridge.isConnected(),
             "qrPath", weChatBridge.getLoginQrPath(),
-            "message", weChatBridge.isConnected() ? "✅ 微信已连接" : "⏳ 等待扫码登录"
+            "status", weChatBridge.getStatusMessage()
         ));
     }
 }

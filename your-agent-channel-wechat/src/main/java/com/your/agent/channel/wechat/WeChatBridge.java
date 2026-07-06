@@ -8,13 +8,11 @@ import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
-/**
- * 个人微信桥接器 —— 通过itchat-uos协议连接个人微信。
- * 扫码登录后，自动接收消息并调用ReActEngine回复。
- */
 @Slf4j
 @Component
 public class WeChatBridge {
@@ -24,10 +22,12 @@ public class WeChatBridge {
     private Thread readerThread;
     private volatile boolean running = false;
     private volatile boolean connected = false;
-    private String loginQrPath = "";
+    private volatile String loginQrPath = "";
+    private volatile String statusMessage = "初始化中...";
 
     public boolean isConnected() { return connected; }
     public String getLoginQrPath() { return loginQrPath; }
+    public String getStatusMessage() { return statusMessage; }
 
     public WeChatBridge(ReActEngine reActEngine) {
         this.reActEngine = reActEngine;
@@ -36,115 +36,116 @@ public class WeChatBridge {
     @PostConstruct
     public void start() {
         running = true;
-        // 在单独线程中启动Python桥接进程
         CompletableFuture.runAsync(this::startBridge);
         log.info("WeChatBridge initializing...");
     }
 
     private void startBridge() {
         try {
-            // 检查Python环境和itchat
-            Process checkProcess = Runtime.getRuntime().exec(
-                new String[]{"python3", "-c", "import itchat"}
-            );
-            boolean hasItchat = checkProcess.waitFor(5, TimeUnit.SECONDS);
-
-            if (!hasItchat || checkProcess.exitValue() != 0) {
-                log.warn("itchat not found, installing...");
-                Runtime.getRuntime().exec(new String[]{
-                    "pip3", "install", "itchat-uos", "--quiet"
-                }).waitFor(10, TimeUnit.SECONDS);
+            // 检查 Python 和 itchat
+            Process check = Runtime.getRuntime().exec(new String[]{"python3", "-c", "import itchat; print('ok')"});
+            boolean ok = check.waitFor(10, TimeUnit.SECONDS);
+            if (!ok || check.exitValue() != 0) {
+                log.warn("Installing itchat-uos...");
+                statusMessage = "安装 itchat-uos...";
+                Process install = Runtime.getRuntime().exec(new String[]{
+                    "pip3", "install", "itchat-uos", "-q", "--break-system-packages"
+                });
+                install.waitFor(30, TimeUnit.SECONDS);
             }
 
-            // 启动桥接Python进程
-            String bridgeScript = createBridgeScript();
-            File scriptFile = new File(System.getProperty("java.io.tmpdir"), "wechat_bridge.py");
-            try (FileWriter fw = new FileWriter(scriptFile)) {
-                fw.write(bridgeScript);
+            // 生成桥接脚本到临时目录
+            String script = createBridgeScript();
+            String scriptPath = "/tmp/wechat_bridge.py";
+            try (FileWriter fw = new FileWriter(scriptPath)) {
+                fw.write(script);
             }
 
-            ProcessBuilder pb = new ProcessBuilder("python3", scriptFile.getAbsolutePath());
+            // 启动 Python 进程
+            ProcessBuilder pb = new ProcessBuilder("python3", scriptPath);
             pb.redirectErrorStream(true);
             bridgeProcess = pb.start();
 
-            log.info("WeChat bridge process started, waiting for QR code...");
+            log.info("WeChat bridge started");
+            statusMessage = "等待扫码登录...";
 
-            // 读取进程输出（包含QR码路径和消息）
+            // 读取输出
             readerThread = new Thread(() -> {
                 try (BufferedReader reader = new BufferedReader(
                         new InputStreamReader(bridgeProcess.getInputStream(), StandardCharsets.UTF_8))) {
                     String line;
                     while (running && (line = reader.readLine()) != null) {
-                        handleBridgeOutput(line);
+                        handleOutput(line);
                     }
                 } catch (IOException e) {
-                    log.error("WeChat bridge reader error", e);
+                    if (running) log.error("WeChat reader error", e);
                 }
-            }, "wechat-bridge-reader");
+            }, "wc-reader");
             readerThread.setDaemon(true);
             readerThread.start();
 
-            // 等待登录完成
-            log.info("请扫描二维码登录微信: {}", loginQrPath);
-
         } catch (Exception e) {
-            log.error("Failed to start WeChat bridge", e);
+            log.error("WeChat bridge failed", e);
+            statusMessage = "启动失败: " + e.getMessage();
         }
     }
 
-    private void handleBridgeOutput(String line) {
-        if (line.startsWith("QR:")) {
-            loginQrPath = line.substring(3);
-            log.info("📱 微信登录二维码: {}", loginQrPath);
+    private void handleOutput(String line) {
+        if (line.startsWith("QR_PATH:")) {
+            loginQrPath = line.substring(8).trim();
+            log.info("📱 QR code saved: {}", loginQrPath);
+            statusMessage = "请扫描二维码登录微信";
         } else if (line.startsWith("MSG:")) {
-            // 消息格式: MSG:fromUser:content
             String[] parts = line.substring(4).split(":", 2);
             if (parts.length == 2) {
-                String fromUser = parts[0];
-                String content = parts[1];
-                log.info("📩 微信消息 from {}: {}", fromUser, content);
-                processWeChatMessage(fromUser, content);
+                log.info("📩 WeChat from {}: {}", parts[0], parts[1]);
+                processMessage(parts[0], parts[1]);
             }
         } else if (line.startsWith("LOGIN_OK")) {
             connected = true;
-            log.info("✅ 微信登录成功！");
+            statusMessage = "✅ 微信已连接";
+            log.info("✅ WeChat logged in");
         } else if (line.startsWith("ERROR:")) {
-            log.error("WeChat bridge error: {}", line.substring(6));
+            log.error("WeChat error: {}", line.substring(6));
+            statusMessage = "错误: " + line.substring(6);
+        } else if (line.startsWith("STATUS:")) {
+            statusMessage = line.substring(7);
+        } else {
+            log.debug("WeChat: {}", line);
         }
     }
 
-    private void processWeChatMessage(String fromUser, String content) {
+    private void processMessage(String fromUser, String content) {
         CompletableFuture.runAsync(() -> {
             try {
                 var response = reActEngine.run(content);
                 String answer = response.getFinalAnswer();
-                if (answer == null || answer.isEmpty()) answer = "(空回复)";
-                // 通过进程stdin发送回复
-                sendToBridge("REPLY:" + fromUser + ":" + answer);
-                log.info("✅ WeChat reply sent to {}, iterations={}", fromUser, response.getIterations());
+                sendToBridge("REPLY:" + fromUser + ":" + (answer != null ? answer : ""));
             } catch (Exception e) {
-                log.error("WeChat message processing failed", e);
-                sendToBridge("REPLY:" + fromUser + ":❌ 处理出错: " + e.getMessage());
+                sendToBridge("REPLY:" + fromUser + ":❌ " + e.getMessage());
             }
         });
     }
 
-    private void sendToBridge(String command) {
+    private void sendToBridge(String cmd) {
         if (bridgeProcess != null && bridgeProcess.isAlive()) {
             try {
-                OutputStreamWriter writer = new OutputStreamWriter(
+                OutputStreamWriter w = new OutputStreamWriter(
                     bridgeProcess.getOutputStream(), StandardCharsets.UTF_8);
-                writer.write(command + "\n");
-                writer.flush();
+                w.write(cmd + "\n");
+                w.flush();
             } catch (IOException e) {
-                log.error("Failed to send to bridge", e);
+                log.error("Send to bridge failed", e);
             }
         }
     }
 
     private String createBridgeScript() {
         return """
-import sys, json, threading, time, os, base64
+import sys, threading, os, time
+
+qr_path = "/tmp/wechat_qr.png"
+
 try:
     import itchat
     from itchat.content import TEXT
@@ -157,12 +158,11 @@ def on_text(msg):
     content = msg['Text']
     print(f"MSG:{from_user}:{content}", flush=True)
 
-def reader_thread():
+def reader():
     while True:
         try:
             line = sys.stdin.readline()
-            if not line:
-                break
+            if not line: break
             line = line.strip()
             if line.startswith("REPLY:"):
                 parts = line[6:].split(":", 1)
@@ -171,10 +171,11 @@ def reader_thread():
         except:
             break
 
-itchat.auto_login(enableCmdQR=2, hotReload=True, printReload2=False)
+# Force QR code to save as image
+itchat.auto_login(enableCmdQR=2, hotReload=True, picDir=qr_path)
 print("LOGIN_OK", flush=True)
 
-t = threading.Thread(target=reader_thread, daemon=True)
+t = threading.Thread(target=reader, daemon=True)
 t.start()
 itchat.run(block=True)
 """;
