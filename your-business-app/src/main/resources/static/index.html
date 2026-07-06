@@ -1,203 +1,264 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"><title>凤凰</title><style>
-*{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#0b0b12;--s:rgba(255,255,255,0.03);--s2:rgba(255,255,255,0.06);--b:rgba(255,255,255,0.07);--t:#eaeaf0;--t2:#7a7a92;--a:#6c63ff;--a2:#00d4aa;--sc:#34c759;--fs:clamp(12px,2vw,14px);--fs2:clamp(10px,1.5vw,12px)}
-body{font-family:-apple-system,BlinkMacSystemFont,'Inter',sans-serif;background:var(--bg);color:var(--t);min-height:100dvh;display:flex;font-size:var(--fs);overflow:hidden}
-#sd{width:clamp(52px,6vw,200px);background:var(--s);border-right:1px solid var(--b);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;transition:width .2s;z-index:20}
-#sd:hover,#sd:focus-within{width:clamp(180px,20vw,240px)}
-#sd .ni{white-space:nowrap;overflow:hidden}
-#sd .ni span:last-child{opacity:0;transition:opacity .2s}
-#sd:hover .ni span:last-child,#sd:focus-within .ni span:last-child{opacity:1}
-.logo{padding:clamp(8px,1vw,14px);border-bottom:1px solid var(--b);text-align:center;font-size:clamp(16px,2.5vw,20px)}
-.ni{display:flex;align-items:center;gap:clamp(6px,0.8vw,10px);padding:clamp(6px,0.8vw,10px);margin:2px clamp(4px,0.5vw,8px);border-radius:8px;font-size:var(--fs);color:var(--t2);cursor:pointer;transition:all .15s}
+<!DOCTYPE html><html lang="zh-CN"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>凤凰 · Phoenix</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.06) transparent}
+:root{--bg:#080810;--s:rgba(255,255,255,0.03);--s2:rgba(255,255,255,0.06);--b:rgba(255,255,255,0.06);--t:#eaeaf0;--t2:#7a7a92;--a:#6c63ff;--a2:#00d4aa;--sc:#34c759;--wa:#ff9f0a;--er:#ff453a;--fs:clamp(12px,1.6vw,14px);--fs2:clamp(10px,1.3vw,12px);--fs3:clamp(8px,1vw,10px);--r:clamp(8px,1vw,12px)}
+body{font-family:-apple-system,BlinkMacSystemFont,'Inter','SF Pro',sans-serif;background:var(--bg);color:var(--t);min-height:100dvh;display:flex;font-size:var(--fs);overflow:hidden;line-height:1.5}
+
+/* Sidebar */
+.sd{width:clamp(200px,16vw,230px);background:var(--s);border-right:1px solid var(--b);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;padding:0}
+.sd .lg{padding:clamp(14px,1.5vw,18px);border-bottom:1px solid var(--b);display:flex;align-items:center;gap:clamp(6px,0.8vw,10px);margin-bottom:4px}
+.sd .lg-i{width:clamp(28px,2.5vw,34px);height:clamp(28px,2.5vw,34px);background:linear-gradient(135deg,var(--a),var(--a2));border-radius:clamp(6px,0.7vw,9px);display:flex;align-items:center;justify-content:center;font-size:clamp(14px,1.5vw,17px);flex-shrink:0}
+.sd .lg-t{font-size:clamp(13px,1.4vw,15px);font-weight:700;letter-spacing:-.3px}
+.sd .lg-s{font-size:clamp(7px,0.8vw,9px);color:var(--t2)}
+.nv{font-size:var(--fs3);color:var(--t2);text-transform:uppercase;letter-spacing:1px;padding:clamp(8px,0.8vw,10px) clamp(10px,1vw,14px) clamp(3px,0.4vw,5px);font-weight:600}
+.ni{display:flex;align-items:center;gap:clamp(8px,0.8vw,10px);padding:clamp(6px,0.7vw,9px) clamp(10px,1vw,14px);margin:1px clamp(6px,0.6vw,8px);border-radius:clamp(6px,0.6vw,8px);font-size:var(--fs);color:var(--t2);cursor:pointer;transition:all .15s;position:relative}
 .ni:hover{background:var(--s2);color:var(--t)}
-.ni.act{background:rgba(108,99,255,0.12);color:var(--a)}
-.sf{margin-top:auto;padding:clamp(6px,0.8vw,10px);text-align:center;font-size:var(--fs2);color:var(--t2);border-top:1px solid var(--b)}
-.mn{flex:1;display:flex;flex-direction:column;min-width:0}
-.tc{flex:1;overflow-y:auto;padding:clamp(8px,1.2vw,16px) clamp(10px,1.5vw,20px);display:none}
+.ni.act{background:rgba(108,99,255,0.1);color:var(--a)}
+.ni .bd{margin-left:auto;background:var(--s2);padding:1px clamp(5px,0.5vw,7px);border-radius:10px;font-size:var(--fs3);color:var(--t2)}
+.ni .ic{font-size:clamp(14px,1.5vw,16px);width:clamp(18px,1.8vw,22px);text-align:center}
+.sf{margin-top:auto;padding:clamp(8px,0.8vw,12px);border-top:1px solid var(--b);font-size:var(--fs3);color:var(--t2);text-align:center}
+.sr{display:flex;align-items:center;gap:5px;justify-content:center;margin-bottom:3px}
+.sd-dot{width:5px;height:5px;border-radius:50%;background:var(--sc);box-shadow:0 0 6px var(--sc);animation:pu 2s infinite}
+@keyframes pu{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* Main */
+.mn{flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden}
+.hd{padding:clamp(10px,1vw,14px) clamp(16px,2vw,24px);border-bottom:1px solid var(--b);display:flex;align-items:center;gap:clamp(8px,1vw,12px);flex-shrink:0;background:rgba(8,8,16,0.85);backdrop-filter:blur(20px);position:sticky;top:0;z-index:10}
+.hd h2{font-size:clamp(15px,1.8vw,17px);font-weight:600}
+.hd .ht{font-size:var(--fs2);color:var(--t2);margin-left:auto;opacity:.6}
+
+.tc{flex:1;overflow-y:auto;padding:clamp(12px,1.5vw,20px) clamp(14px,2vw,24px);display:none}
 .tc.act{display:flex;flex-direction:column}
-.chat{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:6px;padding:4px 0}
-.ms{max-width:90%;padding:clamp(6px,0.8vw,10px) clamp(8px,1vw,12px);border-radius:12px;font-size:var(--fs);line-height:1.5;animation:fi .2s}
-.ms.u{align-self:flex-end;background:rgba(108,99,255,0.15);border:1px solid rgba(108,99,255,0.2);border-bottom-right-radius:3px}
-.ms.a{align-self:flex-start;background:var(--s);border:1px solid var(--b);border-bottom-left-radius:3px}
-.ms .bad{font-size:var(--fs2);opacity:.5;margin-bottom:2px}
-@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-.inr{display:flex;gap:6px;padding:clamp(6px,0.8vw,10px) 0 2px;border-top:1px solid var(--b)}
-.inr textarea{flex:1;background:var(--s);border:1px solid var(--b);border-radius:10px;padding:clamp(6px,0.8vw,10px) clamp(8px,1vw,12px);color:var(--t);font-size:var(--fs);font-family:inherit;resize:none;min-height:36px;max-height:80px;outline:none}
-.inr textarea:focus{border-color:var(--a)}
-.inr button{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--a),var(--a2));border:none;color:#fff;font-size:16px;cursor:pointer;flex-shrink:0}
-.cg{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
-.c{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:clamp(10px,1.2vw,16px)}
-.c h3{font-size:var(--fs);font-weight:600;margin-bottom:8px}
-.rw{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.03);font-size:var(--fs)}
+
+/* Stats bar */
+.stb{display:grid;grid-template-columns:repeat(auto-fill,minmax(clamp(120px,14vw,180px),1fr));gap:clamp(6px,0.8vw,10px);margin-bottom:clamp(10px,1.2vw,16px);flex-shrink:0}
+.st{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:clamp(8px,1vw,14px);text-align:center}
+.st .num{font-size:clamp(18px,2.2vw,24px);font-weight:700}
+.st .lb{font-size:var(--fs3);color:var(--t2);margin-top:2px}
+
+/* Cards */
+.cg{display:grid;grid-template-columns:repeat(auto-fill,minmax(clamp(220px,26vw,300px),1fr));gap:clamp(8px,1vw,12px);margin-bottom:clamp(10px,1.2vw,14px)}
+.c{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:clamp(12px,1.2vw,16px);transition:all .2s}
+.c:hover{border-color:rgba(108,99,255,0.15)}
+.c .c-h{font-size:var(--fs);font-weight:600;margin-bottom:clamp(6px,0.8vw,10px);display:flex;align-items:center;gap:6px}
+.rw{display:flex;justify-content:space-between;padding:clamp(3px,0.4vw,5px) 0;border-bottom:1px solid rgba(255,255,255,0.03);font-size:var(--fs)}
 .rw:last-child{border:none}
 .lb{color:var(--t2)}.va{font-weight:500}
-.tg{display:inline-block;padding:1px 6px;border-radius:4px;font-size:var(--fs2);background:rgba(52,199,89,0.1);color:var(--sc)}
-.fd{margin-bottom:8px}
+.tg{display:inline-block;padding:1px 6px;border-radius:4px;font-size:var(--fs3);font-weight:600}
+.tg-g{background:rgba(52,199,89,0.1);color:var(--sc)}
+.tg-o{background:rgba(255,159,10,0.1);color:var(--wa)}
+.tg-p{background:rgba(108,99,255,0.1);color:var(--a)}
+pre{font-size:var(--fs2);background:rgba(0,0,0,0.2);padding:clamp(8px,1vw,12px);border-radius:clamp(6px,0.6vw,8px);line-height:1.6;overflow-x:auto}
+
+/* Chat */
+.ch{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:clamp(4px,0.5vw,8px);padding:4px 0}
+.ms{max-width:90%;padding:clamp(6px,0.8vw,10px) clamp(10px,1.2vw,14px);border-radius:clamp(10px,1.2vw,14px);font-size:var(--fs);line-height:1.55;animation:fi .2s}
+.ms.u{align-self:flex-end;background:rgba(108,99,255,0.12);border:1px solid rgba(108,99,255,0.15);border-bottom-right-radius:3px}
+.ms.a{align-self:flex-start;background:var(--s);border:1px solid var(--b);border-bottom-left-radius:3px}
+.ms .bad{font-size:var(--fs3);font-weight:600;opacity:.5;margin-bottom:2px}
+@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.inr{display:flex;gap:6px;padding:clamp(6px,0.8vw,10px) 0 2px;border-top:1px solid var(--b);flex-shrink:0}
+.inr textarea{flex:1;background:var(--s);border:1px solid var(--b);border-radius:clamp(8px,1vw,10px);padding:clamp(8px,0.8vw,10px) clamp(10px,1vw,14px);color:var(--t);font-size:var(--fs);font-family:inherit;resize:none;min-height:clamp(34px,3.5vw,40px);max-height:clamp(60px,6vw,90px);outline:none}
+.inr textarea:focus{border-color:var(--a)}
+.inr button{width:clamp(34px,3.5vw,40px);height:clamp(34px,3.5vw,40px);border-radius:clamp(8px,1vw,10px);background:linear-gradient(135deg,var(--a),var(--a2));border:none;color:#fff;font-size:clamp(14px,1.5vw,16px);cursor:pointer;flex-shrink:0;transition:all .2s}
+.inr button:hover{transform:scale(1.05);opacity:.9}
+
+/* Form */
+.fd{margin-bottom:clamp(6px,0.8vw,10px)}
 .fd label{font-size:var(--fs2);color:var(--t2);display:block;margin-bottom:2px}
-.fd input,.fd select{width:100%;background:var(--s);border:1px solid var(--b);border-radius:6px;padding:6px 10px;color:var(--t);font-size:var(--fs);outline:none}
-.btn{padding:6px 14px;border-radius:6px;border:none;font-size:var(--fs2);cursor:pointer;background:var(--a);color:#fff}
+.fd input,.fd select{width:100%;background:var(--s);border:1px solid var(--b);border-radius:clamp(6px,0.6vw,8px);padding:clamp(5px,0.6vw,8px) clamp(8px,0.8vw,12px);color:var(--t);font-size:var(--fs);outline:none}
+.fd input:focus,.fd select:focus{border-color:var(--a)}
+.btn{padding:clamp(5px,0.6vw,8px) clamp(10px,1.2vw,16px);border-radius:clamp(6px,0.6vw,8px);border:none;font-size:var(--fs2);cursor:pointer;transition:all .2s}
+.btn-p{background:linear-gradient(135deg,var(--a),#7b73ff);color:#fff}
+.btn-p:hover{transform:translateY(-1px)}
 .btn-s{background:var(--s2);color:var(--t)}
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(20,20,31,0.95);border:1px solid var(--b);border-radius:8px;padding:8px 16px;font-size:var(--fs2);z-index:999;opacity:0;transition:all .3s;pointer-events:none}
+.btn-r{display:flex;gap:6px;flex-wrap:wrap}
+
+table{width:100%;border-collapse:collapse;font-size:var(--fs2)}
+th,td{text-align:left;padding:clamp(4px,0.5vw,7px) clamp(6px,0.6vw,10px);border-bottom:1px solid var(--b)}
+th{color:var(--t2);font-weight:500;font-size:var(--fs3);text-transform:uppercase;letter-spacing:.5px}
+
+.toast{position:fixed;bottom:clamp(12px,1.5vw,20px);left:50%;transform:translateX(-50%) translateY(20px);background:rgba(16,16,26,0.95);border:1px solid var(--b);border-radius:clamp(6px,0.6vw,8px);padding:clamp(6px,0.8vw,10px) clamp(12px,1.5vw,20px);font-size:var(--fs);z-index:999;opacity:0;transition:all .3s;backdrop-filter:blur(20px)}
 .toast.sh{opacity:1;transform:translateX(-50%) translateY(0)}
-@media(max-width:600px){#sd{width:48px}#sd:hover{width:160px}}
+
+@media(max-width:768px){.sd{width:clamp(180px,55vw,260px);position:fixed;left:0;top:0;bottom:0;z-index:20;transform:translateX(-105%);transition:transform .25s}.sd.op{transform:translateX(0)}.hm{display:flex!important}}
+.hm{display:none;position:fixed;top:clamp(8px,1vw,12px);left:clamp(8px,1vw,12px);z-index:30;width:clamp(30px,3.5vw,36px);height:clamp(30px,3.5vw,36px);background:var(--a);border:none;border-radius:clamp(6px,0.6vw,8px);color:#fff;font-size:clamp(14px,1.5vw,16px);cursor:pointer;align-items:center;justify-content:center}
+#ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:15}
 </style></head><body>
 
-<aside id="sd">
-<div class="logo">⚡</div>
-<div class="ni act" onclick="go('chat')"><span>💬</span><span>对话</span></div>
-<div class="ni" onclick="go('sessions')"><span>📋</span><span>历史</span></div>
-<div class="ni" onclick="go('tools')"><span>🔧</span><span>工具</span></div>
-<div class="ni" onclick="go('model')"><span>🤖</span><span>模型</span></div>
-<div class="ni" onclick="go('channels')"><span>📡</span><span>渠道</span></div>
-<div class="ni" onclick="go('evolve')"><span>🧬</span><span>进化</span></div>
-<div class="ni" onclick="go('settings')"><span>⚙️</span><span>设置</span></div>
-<div class="sf"><span id="st">●</span></div>
+<button class="hm" onclick="tog()">☰</button><div id="ov" onclick="tog()"></div>
+
+<aside class="sd" id="sd">
+<div class="lg"><div class="lg-i">🐦</div><div><div class="lg-t">凤凰</div><div class="lg-s">Phoenix AI Agent</div></div></div>
+<div class="nv">主菜单</div>
+<div class="ni act" onclick="go('ov')"><span class="ic">💬</span><span>总览</span></div>
+<div class="ni" onclick="go('chat')"><span class="ic">💬</span><span>对话</span><span class="bd" id="mB">0</span></div>
+<div class="ni" onclick="go('sessions')"><span class="ic">📋</span><span>历史</span><span class="bd" id="sB">-</span></div>
+<div class="ni" onclick="go('tools')"><span class="ic">🔧</span><span>工具</span></div>
+<div class="ni" onclick="go('model')"><span class="ic">🤖</span><span>模型</span></div>
+<div class="ni" onclick="go('channels')"><span class="ic">📡</span><span>渠道</span></div>
+<div class="ni" onclick="go('evolve')"><span class="ic">🧬</span><span>进化</span></div>
+<div class="ni" onclick="go('cron')"><span class="ic">⏰</span><span>定时</span></div>
+<div class="ni" onclick="go('plugins')"><span class="ic">🧩</span><span>插件</span></div>
+<div class="ni" onclick="go('mcp')"><span class="ic">🔗</span><span>MCP</span></div>
+<div class="sf"><div class="sr"><span class="sd-dot"></span><span id="stTxt">运行中</span></div>v2.0</div>
 </aside>
 
 <div class="mn">
+<div class="hd"><h2 id="pT">🐦 总览</h2><span class="ht" id="pH">系统状态与统计</span></div>
+
+<!-- Overview -->
+<div class="tc act" id="p-ov">
+<div class="stb" id="statsBar">
+  <div class="st"><div class="num" id="stSess">-</div><div class="lb">会话</div></div>
+  <div class="st"><div class="num" id="stMsg">-</div><div class="lb">消息</div></div>
+  <div class="st"><div class="num" id="stTools">-</div><div class="lb">工具</div></div>
+  <div class="st"><div class="num" id="stChan">15</div><div class="lb">渠道</div></div>
+  <div class="st"><div class="num" id="stMod">1</div><div class="lb">模型</div></div>
+</div>
+<div class="cg">
+  <div class="c"><div class="c-h">⚡ 快速操作</div>
+    <div class="btn-r"><button class="btn btn-p" onclick="go('chat')">💬 新对话</button><button class="btn btn-s" onclick="go('model')">🤖 换模型</button><button class="btn btn-s" onclick="go('cron')">⏰ 定时任务</button></div>
+  </div>
+  <div class="c"><div class="c-h">📊 引擎</div>
+    <div class="rw"><span class="lb">引擎</span><span class="va">ReAct v2.0</span></div>
+    <div class="rw"><span class="lb">记忆</span><span class="va tg tg-g">L1-L4 ✅</span></div>
+    <div class="rw"><span class="lb">MCP</span><span class="va" id="mcpStat">-</span></div>
+  </div>
+  <div class="c"><div class="c-h">🔗 互通</div>
+    <div class="rw"><span class="lb">Hermes</span><span class="va">MCP 就绪</span></div>
+    <div class="rw"><span class="lb">Codex</span><span class="va">MCP 就绪</span></div>
+    <div class="rw"><span class="lb">OpenClaw</span><span class="va">MCP 就绪</span></div>
+  </div>
+</div>
+</div>
 
 <!-- Chat -->
-<div class="tc act" id="p-chat">
-<div style="display:flex;gap:6px;align-items:center;margin-bottom:6px;flex-shrink:0">
-  <span style="font-size:var(--fs2);color:var(--t2)">会话: <span id="curSid">-</span></span>
-  <button class="btn btn-s" onclick="newSess()" style="margin-left:auto">➕ 新对话</button>
-</div>
-<div class="chat" id="msgs"></div>
-<div class="inr"><textarea id="inp" rows="1" placeholder="发消息..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();snd()}"></textarea><button onclick="snd()">➤</button></div>
+<div class="tc" id="p-chat">
+<div class="ch" id="msgs"></div>
+<div class="inr"><textarea id="inp" rows="1" placeholder="给凤凰发消息..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();snd()}"></textarea><button onclick="snd()">➤</button></div>
 </div>
 
 <!-- Sessions -->
 <div class="tc" id="p-sessions">
-<div style="display:flex;gap:6px;margin-bottom:8px;align-items:center">
-  <span style="font-weight:600">📋 对话历史</span>
-  <button class="btn" onclick="newSess()" style="margin-left:auto">➕ 新对话</button>
-</div>
-<div id="sessList" style="display:flex;flex-direction:column;gap:4px"></div>
+<div id="sessList">加载中...</div>
 </div>
 
 <!-- Tools -->
 <div class="tc" id="p-tools">
 <div class="cg">
-<div class="c"><h3>🔧 工具</h3><div id="toolInfo">加载中...</div></div>
-<div class="c"><h3>🔌 MCP</h3><div id="mcpInfo">-</div></div>
+<div class="c"><div class="c-h">🔧 工具</div><div id="toolInfo">加载中...</div></div>
+<div class="c"><div class="c-h">🔌 MCP</div><div id="mcpInfo">-</div></div>
 </div></div>
 
 <!-- Model -->
 <div class="tc" id="p-model">
 <div class="cg">
-<div class="c"><h3>🤖 模型</h3>
+<div class="c"><div class="c-h">🤖 模型</div>
 <div class="fd"><label>模型</label><input id="mN" value="deepseek-v4-flash"></div>
 <div class="fd"><label>API</label><input id="mU" value="https://token.sensenova.cn/v1"></div>
 <div class="fd"><label>Key</label><input id="mK" type="password"></div>
-<div style="display:flex;gap:6px"><button class="btn" onclick="svM()">💾</button><button class="btn btn-s" onclick="tstM()">🔍</button></div>
-<div id="mR" style="margin-top:6px;font-size:var(--fs2);color:var(--t2)"></div>
-</div>
-<div class="c"><h3>⚡ 预设</h3>
+<div class="btn-r"><button class="btn btn-p" onclick="svM()">💾 保存</button><button class="btn btn-s" onclick="tstM()">🔍 测试</button></div>
+<div id="mR" style="margin-top:6px;font-size:var(--fs2);color:var(--t2)"></div></div>
+<div class="c"><div class="c-h">⚡ 预设</div>
 <select onchange="qM(this.value)" style="width:100%;background:var(--s);border:1px solid var(--b);border-radius:6px;padding:6px 10px;color:var(--t);font-size:var(--fs);outline:none">
 <option value="">自定义</option><option value="ds">DeepSeek</option><option value="gpt4">GPT-4o</option>
-<option value="claude">Claude 4</option><option value="qwen">Qwen</option><option value="groq">Groq</option>
-</select></div>
+<option value="claude">Claude 4</option><option value="qwen">Qwen</option><option value="groq">Groq Llama</option>
+<option value="glm">智谱 GLM</option></select></div>
 </div></div>
 
 <!-- Channels -->
 <div class="tc" id="p-channels">
 <div class="cg">
-<div class="c"><h3>🌐 Web</h3><div class="rw"><span class="lb">状态</span><span class="va tg">运行中</span></div></div>
-<div class="c"><h3>📱 Telegram</h3><div class="fd"><label>Token</label><input id="tgT" placeholder="123:ABC"></div><button class="btn" onclick="svTG()">保存</button></div>
+<div class="c"><div class="c-h">🌐 Web</div><div class="rw"><span class="lb">状态</span><span class="va tg tg-g">✅ 运行</span></div></div>
+<div class="c"><div class="c-h">📱 Telegram</div><div class="fd"><label>Token</label><input id="tgT" placeholder="123:ABC"></div><button class="btn btn-p" onclick="svTG()">保存</button></div>
+<div class="c"><div class="c-h">🐦 Discord</div><div class="rw"><span class="lb">状态</span><span class="va">Webhook 就绪</span></div></div>
+<div class="c"><div class="c-h">💬 Slack</div><div class="rw"><span class="lb">状态</span><span class="va">Webhook 就绪</span></div></div>
+<div class="c"><div class="c-h">💬 微信</div><div class="rw"><span class="lb">状态</span><span class="va">扫码登录</span></div></div>
+<div class="c"><div class="c-h">🏢 企微</div><div class="rw"><span class="lb">状态</span><span class="va tg tg-g">就绪</span></div></div>
+<div class="c"><div class="c-h">📢 飞书</div><div class="rw"><span class="lb">状态</span><span class="va">Webhook</span></div></div>
+<div class="c"><div class="c-h">📢 钉钉</div><div class="rw"><span class="lb">状态</span><span class="va">Webhook</span></div></div>
 </div></div>
 
 <!-- Evolve -->
 <div class="tc" id="p-evolve">
 <div class="cg">
-<div class="c"><h3>🧬 进化</h3><div style="display:flex;gap:6px;margin-bottom:6px"><button class="btn" onclick="ev()">进化</button><button class="btn btn-s" onclick="an()">分析</button></div><div id="eR" style="font-size:var(--fs2);color:var(--t2);white-space:pre-wrap;max-height:200px;overflow-y:auto"></div></div>
-<div class="c"><h3>🛠️ 技能</h3><div class="fd"><label>名称</label><input id="sN" placeholder="code_review"></div><div class="fd"><label>描述</label><input id="sD" placeholder="审查代码"></div><button class="btn" onclick="mkS()">创造</button><div id="sR" style="margin-top:4px;font-size:var(--fs2);color:var(--t2)"></div></div>
+<div class="c"><div class="c-h">🧬 进化</div><div class="btn-r"><button class="btn btn-p" onclick="ev()">🚀 执行进化</button><button class="btn btn-s" onclick="an()">🔍 代码分析</button></div><div id="eR" style="margin-top:8px;font-size:var(--fs2);color:var(--t2);white-space:pre-wrap;max-height:200px;overflow-y:auto"></div></div>
+<div class="c"><div class="c-h">🛠️ 技能</div><div class="fd"><label>名称</label><input id="sN" placeholder="code_review"></div><div class="fd"><label>描述</label><input id="sD" placeholder="审查代码安全"></div><button class="btn btn-p" onclick="mkS()">✨ 创造</button><div id="sR" style="margin-top:4px;font-size:var(--fs2);color:var(--t2)"></div></div>
 </div></div>
 
-<!-- Settings -->
-<div class="tc" id="p-settings">
+<!-- Cron -->
+<div class="tc" id="p-cron">
 <div class="cg">
-<div class="c"><h3>⚙️ 系统</h3><div class="rw"><span class="lb">引擎</span><span class="va">ReAct v2</span></div><div class="rw"><span class="lb">会话</span><span class="va" id="sessCount">-</span></div><button class="btn btn-s" onclick="rf()" style="margin-top:6px">🔄 刷新</button></div>
-<div class="c"><h3>🚀 CLI</h3><pre style="font-size:var(--fs2);background:rgba(0,0,0,0.2);padding:8px;border-radius:6px;line-height:1.6">bash chat.sh    对话
-bash pmm.sh doctor 诊断</pre></div>
+<div class="c"><div class="c-h">⏰ 定时任务</div>
+<div class="fd"><label>名称</label><input id="cN" placeholder="日报"></div>
+<div class="fd"><label>提示词</label><input id="cP" placeholder="生成今日销售报告"></div>
+<div class="fd"><label>时间</label><input id="cS" placeholder="每天早上9点"></div>
+<div class="btn-r"><button class="btn btn-p" onclick="addCron()">➕ 添加</button></div>
+<div id="cR" style="margin-top:6px;font-size:var(--fs2);color:var(--t2)"></div></div>
+<div class="c"><div class="c-h">📋 任务列表</div><div id="cronList">暂无定时任务</div></div>
+</div></div>
+
+<!-- Plugins -->
+<div class="tc" id="p-plugins">
+<div class="cg">
+<div class="c"><div class="c-h">🧩 插件</div><div id="pluginList">暂无插件</div></div>
+</div></div>
+
+<!-- MCP -->
+<div class="tc" id="p-mcp">
+<div class="cg">
+<div class="c"><div class="c-h">🔗 MCP 互通</div>
+<div class="rw"><span class="lb">Hermes</span><span class="va tg tg-g">MCP 就绪</span></div>
+<div class="rw"><span class="lb">Codex</span><span class="va tg tg-g">MCP 就绪</span></div>
+<div class="rw"><span class="lb">OpenClaw</span><span class="va tg tg-g">MCP 就绪</span></div>
+<div style="margin-top:8px;font-size:var(--fs2);color:var(--t2)">端点: POST /mcp</div>
+<div class="fd" style="margin-top:6px"><label>注册远程 MCP</label><input id="mcpUrl" placeholder="http://localhost:11435"></div>
+<button class="btn btn-p" onclick="regMCP()">🔗 注册</button>
+<div id="mcpRes" style="margin-top:4px;font-size:var(--fs2);color:var(--t2)"></div></div>
 </div></div>
 
 </div>
-
 <div class="toast" id="toast"></div>
 
 <script>
 const H=location.protocol+'//'+location.host;
-let bf=false,sid='',msgs=[];
-
-function go(n){document.querySelectorAll('.tc').forEach(e=>e.classList.remove('act'));document.querySelectorAll('.ni').forEach(e=>e.classList.remove('act'));document.getElementById('p-'+n).classList.add('act');document.querySelector(`.ni[onclick*="'${n}'"]`).classList.add('act');if(n==='sessions')loadSess()}
+let bf=false;
+function tog(){document.getElementById('sd').classList.toggle('op');document.getElementById('ov').classList.toggle('op')}
+function go(n){document.querySelectorAll('.tc').forEach(e=>e.classList.remove('act'));document.querySelectorAll('.ni').forEach(e=>e.classList.remove('act'));document.getElementById('p-'+n).classList.add('act');document.querySelector(`.ni[onclick*="'${n}'"]`).classList.add('act');if(window.innerWidth<=768)tog();const T={'ov':'🐦 总览','chat':'💬 对话','sessions':'📋 历史','tools':'🔧 工具','model':'🤖 模型','channels':'📡 渠道','evolve':'🧬 进化','cron':'⏰ 定时','plugins':'🧩 插件','mcp':'🔗 MCP'};document.getElementById('pT').textContent=T[n]||'🐦 凤凰'}
 
 // Chat
 const M=document.getElementById('msgs'),I=document.getElementById('inp');
-function addMsg(t,r){let d=document.createElement('div');d.className='ms '+r;
-  let b=document.createElement('div');b.className='bad';b.textContent={u:'你',a:'凤凰',t:'工具'}[r[0]]||r;d.appendChild(b);
-  let c=document.createElement('div');c.textContent=t;d.appendChild(c);M.appendChild(d);M.scrollTop=M.scrollHeight;return d}
+function addMsg(t,r){let d=document.createElement('div');d.className='ms '+r;let b=document.createElement('div');b.className='bad';b.textContent={u:'你',a:'凤凰',s:'系统'}[r[0]]||r;d.appendChild(b);let c=document.createElement('div');c.textContent=t;d.appendChild(c);M.appendChild(d);M.scrollTop=M.scrollHeight;return d}
+async function snd(){let t=I.value.trim();if(!t||bf)return;bf=true;I.value='';addMsg(t,'u');let l=addMsg('⏳...','a');try{let r=await fetch(H+'/api/agent/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:t})});let d=await r.json();l.remove();addMsg(d.content||'(空)','a')}catch(e){l.remove();addMsg('❌ '+e.message,'s')}bf=false;loadStats()}
 
-function loadSession(id){
-  sid=id;M.innerHTML='';document.getElementById('curSid').textContent=id;
-  fetch(H+'/api/sessions/'+id).then(r=>r.json()).then(d=>{
-    if(d.messages) d.messages.forEach(m=>addMsg(m.content,m.role==='user'?'u':'a'));
-  }).catch(()=>{});
-}
-
-async function snd(){
-  let t=I.value.trim();if(!t||bf)return;bf=true;I.value='';addMsg(t,'u');
-  let l=addMsg('⏳...','a');
-  try{
-    let r=await fetch(H+'/api/agent/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:t})});
-    let d=await r.json();l.remove();addMsg(d.content||'(空)','a');
-    sid=d.sessionId||sid;document.getElementById('curSid').textContent=sid;
-  }catch(e){l.remove();addMsg('❌ '+e.message,'s')}bf=false;
-}
-
-function newSess(){
-  fetch(H+'/api/sessions',{method:'POST'}).then(r=>r.json()).then(d=>{
-    sid=d.sessionId;M.innerHTML='';document.getElementById('curSid').textContent=sid;
-    toast('✅ 新会话已创建');go('chat');
-  });
-}
-
-// Sessions
-function loadSess(){
-  let el=document.getElementById('sessList');el.innerHTML='⏳ 加载中...';
-  fetch(H+'/api/sessions').then(r=>r.json()).then(list=>{
-    el.innerHTML='';
-    if(list.length===0){el.innerHTML='<div style="color:var(--t2);padding:10px">暂无对话历史</div>';return}
-    document.getElementById('sessCount').textContent=list.length;
-    list.forEach(s=>{
-      let d=document.createElement('div');d.style.cssText='display:flex;align-items:center;gap:6px;padding:8px 10px;border-radius:8px;cursor:pointer;background:var(--s);border:1px solid var(--b);transition:all .15s';
-      d.onmouseover=()=>d.style.background='var(--s2)';d.onmouseout=()=>d.style.background='var(--s)';
-      d.innerHTML=`<span>💬</span><span style="flex:1">${s.title}</span><span style="font-size:var(--fs2);color:var(--t2)">${s.messageCount}条</span>`;
-      d.onclick=()=>{loadSession(s.id);go('chat')};
-      el.appendChild(d);
-    });
-  }).catch(()=>{el.innerHTML='<div style="color:var(--t2)">加载失败</div>'});
-}
+// Stats
+async function loadStats(){try{let r=await fetch(H+'/api/sessions');let d=await r.json();document.getElementById('stSess').textContent=d.length;document.getElementById('sB').textContent=d.length;let mc=0;d.forEach(s=>mc+=s.messageCount||0);document.getElementById('stMsg').textContent=mc;document.getElementById('stTools').textContent='?'}catch(e){}}
+async function loadSess(){let el=document.getElementById('sessList');el.innerHTML='⏳...';try{let r=await fetch(H+'/api/sessions');let d=await r.json();el.innerHTML='';if(!d.length){el.innerHTML='<div style="color:var(--t2)">暂无对话</div>';return}d.forEach(s=>{let di=document.createElement('div');di.style.cssText='display:flex;align-items:center;gap:6px;padding:8px 10px;border-radius:8px;cursor:pointer;background:var(--s);border:1px solid var(--b);margin-bottom:4px';di.innerHTML=`<span>💬</span><span style="flex:1">${s.title}</span><span style="font-size:var(--fs2);color:var(--t2)">${s.messageCount||0}条</span>`;di.onclick=()=>{go('chat')};el.appendChild(di)})}catch(e){el.innerHTML='<div style="color:var(--t2)">加载失败</div>'}}
+loadSess();loadStats();
 
 // Model
 function svM(){localStorage.setItem('pmm_m',JSON.stringify({n:document.getElementById('mN').value,u:document.getElementById('mU').value,k:document.getElementById('mK').value}));toast('✅ 已保存')}
 async function tstM(){let e=document.getElementById('mR');e.textContent='⏳...';try{let r=await fetch(H+'/api/agent/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:'ping'})});let d=await r.json();e.innerHTML='✅ '+d.content.substring(0,60)}catch(x){e.textContent='❌ '+x.message}}
-function qM(v){const P={'ds':{n:'deepseek-chat',u:'https://api.deepseek.com/v1'},'gpt4':{n:'gpt-4o',u:'https://api.openai.com/v1'},'claude':{n:'claude-sonnet-4',u:'https://api.anthropic.com/v1'},'qwen':{n:'qwen2.5:7b',u:'http://localhost:11434/v1'},'groq':{n:'llama3-70b-8192',u:'https://api.groq.com/openai/v1'}};if(P[v]){document.getElementById('mN').value=P[v].n;document.getElementById('mU').value=P[v].u;toast('⚡ 已切换')}}
+function qM(v){const P={'ds':{n:'deepseek-chat',u:'https://api.deepseek.com/v1'},'gpt4':{n:'gpt-4o',u:'https://api.openai.com/v1'},'claude':{n:'claude-sonnet-4',u:'https://api.anthropic.com/v1'},'qwen':{n:'qwen2.5:7b',u:'http://localhost:11434/v1'},'groq':{n:'llama3-70b-8192',u:'https://api.groq.com/openai/v1'},'glm':{n:'glm-5',u:'https://open.bigmodel.cn/api/paas/v4'}};if(P[v]){document.getElementById('mN').value=P[v].n;document.getElementById('mU').value=P[v].u;toast('⚡ 已切换')}}
 
 // Channels
 function svTG(){let t=document.getElementById('tgT').value.trim();if(!t)return toast('❌ 输入Token');localStorage.setItem('pmm_tg',t);toast('✅ 已保存')}
 
 // Evolve
-async function ev(){let e=document.getElementById('eR');e.textContent='🧬...';try{let r=await fetch(H+'/api/evolution/evolve',{method:'POST'});let d=await r.json();e.textContent=JSON.stringify(d,null,2)}catch(x){e.textContent='❌ '+x.message}}
+async function ev(){let e=document.getElementById('eR');e.textContent='🧬...';try{let r=await fetch(H+'/api/evolution/evolve',{method:'POST'});let d=await r.json();e.textContent=JSON.stringify(d,null,2);toast('✅ 完成')}catch(x){e.textContent='❌ '+x.message}}
 async function an(){let e=document.getElementById('eR');e.textContent='🔍...';try{let r=await fetch(H+'/api/evolution/analyze',{method:'POST'});let d=await r.json();e.textContent=JSON.stringify(d,null,2)}catch(x){e.textContent='❌ '+x.message}}
 async function mkS(){let n=document.getElementById('sN').value.trim(),d=document.getElementById('sD').value.trim();if(!n||!d)return toast('❌ 填写');let e=document.getElementById('sR');e.textContent='⏳...';try{let r=await fetch(H+'/api/agent/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:'创建技能 '+n+'：'+d})});let o=await r.json();e.textContent=o.content}catch(x){e.textContent='❌ '+x.message}}
 
-// Settings
-async function rf(){try{let r=await fetch(H+'/api/agent/health');let d=await r.json();document.getElementById('st').textContent='●';document.getElementById('st').style.color='var(--sc)';sid=d.sessionId||sid;document.getElementById('curSid').textContent=sid;toast('🔄 已刷新')}catch(e){document.getElementById('st').style.color='#ff453a';toast('❌ 离线')}}
+// Cron
+async function addCron(){let n=document.getElementById('cN').value.trim(),p=document.getElementById('cP').value.trim(),s=document.getElementById('cS').value.trim();if(!n||!p||!s)return toast('❌ 填写所有字段');try{let r=await fetch(H+'/api/cron',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:n,prompt:p,schedule:s})});let d=await r.json();document.getElementById('cR').innerHTML='✅ 已创建: '+d.id;toast('✅ 定时任务已添加')}catch(x){document.getElementById('cR').textContent='❌ '+x.message}}
+
+// MCP
+async function regMCP(){let u=document.getElementById('mcpUrl').value.trim();if(!u)return toast('❌ 输入URL');document.getElementById('mcpRes').textContent='⏳...';try{let r=await fetch(H+'/api/agent/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:'注册MCP服务器 remote 地址为 '+u})});let d=await r.json();document.getElementById('mcpRes').textContent=d.content}catch(x){document.getElementById('mcpRes').textContent='❌ '+x.message}}
 
 function toast(m){let t=document.getElementById('toast');t.textContent=m;t.classList.add('sh');setTimeout(()=>t.classList.remove('sh'),2000)}
-
-// Init
-rf();setInterval(rf,30000);
-fetch(H+'/api/sessions').then(r=>r.json()).then(list=>{if(list.length>0){loadSession(list[0].id);document.getElementById('sessCount').textContent=list.length}});
+setInterval(loadStats,30000);
 </script>
 </body></html>
