@@ -29,8 +29,8 @@ echo -e "${CYAN}╚════════════════════�
 echo -e "${YELLOW}/help 查看命令  /exit 退出${NC}"
 
 SID=""
-HISTFILE="/tmp/phoenix_history.txt"
-touch "$HISTFILE"
+HISTFILE="$HOME/.phoenix_history.txt"
+touch "$HISTFILE" 2>/dev/null || HISTFILE="/dev/null"
 
 while true; do
   echo -ne "${GREEN}phx> ${NC}"
