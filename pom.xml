@@ -26,6 +26,8 @@
         <module>your-agent-channel-signal</module>
         <module>your-agent-channel-imessage</module>
         <module>your-agent-channel-whatsapp</module>
+        <module>your-agent-channel-feishu</module>
+        <module>your-agent-channel-dingtalk</module>
     </modules>
 
     <properties>
