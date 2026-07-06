@@ -25,6 +25,8 @@ public class OpenAiModelProvider implements ModelProvider {
 
     private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
     private static final ObjectMapper MAPPER = new ObjectMapper();
+    private static volatile String CURRENT_MODEL = "gpt-4o";
+    private static volatile String CURRENT_BASE_URL = "https://api.openai.com/v1";
 
     private final OkHttpClient httpClient;
     private final OkHttpClient sseHttpClient;
@@ -67,7 +69,20 @@ public class OpenAiModelProvider implements ModelProvider {
         long timeout = timeoutSeconds > 0 ? timeoutSeconds : 60;
         this.httpClient = new OkHttpClient.Builder().connectTimeout(timeout, TimeUnit.SECONDS).readTimeout(timeout, TimeUnit.SECONDS).writeTimeout(timeout, TimeUnit.SECONDS).build();
         this.sseHttpClient = new OkHttpClient.Builder().connectTimeout(timeout, TimeUnit.SECONDS).readTimeout(0, TimeUnit.SECONDS).writeTimeout(timeout, TimeUnit.SECONDS).retryOnConnectionFailure(true).build();
+        CURRENT_MODEL = this.modelNameInput;
+        CURRENT_BASE_URL = this.baseUrl;
         log.info("OpenAiModelProvider initialized: model={}, baseUrl={}, streaming=true", this.modelNameInput, this.baseUrl);
+    }
+
+    /** 运行时切换模型，不用重启 */
+    public static void switchModel(String modelName, String baseUrl) {
+        if (modelName != null && !modelName.isEmpty()) CURRENT_MODEL = modelName;
+        if (baseUrl != null && !baseUrl.isEmpty()) CURRENT_BASE_URL = baseUrl;
+        log.info("Switched model to: {} @ {}", CURRENT_MODEL, CURRENT_BASE_URL);
+    }
+
+    public static String[] getCurrentModel() {
+        return new String[]{CURRENT_MODEL, CURRENT_BASE_URL};
     }
 
     @Override
@@ -201,7 +216,7 @@ public class OpenAiModelProvider implements ModelProvider {
 
     private ObjectNode buildRequestBody(List<Message> messages, List<String> tools, boolean stream) {
         ObjectNode body = MAPPER.createObjectNode();
-        body.put("model", modelNameInput);
+        body.put("model", CURRENT_MODEL);
         body.put("max_tokens", maxTokens);
         body.put("temperature", temperature);
         body.put("stream", stream);
