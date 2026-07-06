@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
@@ -71,37 +72,54 @@ public class OpenAiModelProvider implements ModelProvider {
 
     @Override
     public Message chat(List<Message> messages, List<String> tools) {
-        try {
-            String jsonBody = MAPPER.writeValueAsString(buildRequestBody(messages, tools, false));
-            Request request = new Request.Builder().url(baseUrl + "/chat/completions").addHeader("Content-Type", "application/json").addHeader("Authorization", "Bearer " + getEffectiveKey()).post(RequestBody.create(jsonBody, JSON)).build();
-            log.debug("Sending sync request: model={}, messages={}", modelNameInput, messages.size());
-            long start = System.currentTimeMillis();
-            try (Response response = httpClient.newCall(request).execute()) {
-                long elapsed = System.currentTimeMillis() - start;
-                if (!response.isSuccessful()) {
-                    String errorBody = response.body() != null ? response.body().string() : "null";
-                    log.error("LLM API error: status={}, body={}", response.code(), errorBody);
-                    return Message.builder().role("assistant").content("[LLM API Error: HTTP " + response.code() + "]").build();
+        int maxRetries = KEY_CHAIN.size() > 1 ? KEY_CHAIN.size() : 1;
+        for (int attempt = 0; attempt < maxRetries; attempt++) {
+            try {
+                String jsonBody = MAPPER.writeValueAsString(buildRequestBody(messages, tools, false));
+                Request request = new Request.Builder().url(baseUrl + "/chat/completions").addHeader("Content-Type", "application/json").addHeader("Authorization", "Bearer " + getEffectiveKey()).post(RequestBody.create(jsonBody, JSON)).build();
+                log.debug("Sending sync request: model={}, messages={}", modelNameInput, messages.size());
+                long start = System.currentTimeMillis();
+                try (Response response = httpClient.newCall(request).execute()) {
+                    long elapsed = System.currentTimeMillis() - start;
+                    if (!response.isSuccessful()) {
+                        String errorBody = response.body() != null ? response.body().string() : "null";
+                        if (response.code() == 429 && (attempt + 1) < maxRetries) {
+                            KEY_INDEX.incrementAndGet();
+                            log.warn("Key 429 on attempt {}, switching to key {}", attempt + 1, KEY_INDEX.get() % KEY_CHAIN.size());
+                            continue;
+                        }
+                        log.error("LLM API error: status={}, body={}", response.code(), errorBody);
+                        return Message.builder().role("assistant").content("[LLM API Error: HTTP " + response.code() + "]").build();
+                    }
+                    String responseBody = response.body() != null ? response.body().string() : "";
+                    log.debug("LLM sync response in {}ms: {} chars", elapsed, responseBody.length());
+                    return parseResponse(responseBody);
                 }
-                String responseBody = response.body() != null ? response.body().string() : "";
-                log.debug("LLM sync response in {}ms: {} chars", elapsed, responseBody.length());
-                return parseResponse(responseBody);
+            } catch (IOException e) {
+                if ((attempt + 1) < maxRetries) {
+                    KEY_INDEX.incrementAndGet();
+                    log.warn("Network error on attempt {}, switching key", attempt + 1);
+                    continue;
+                }
+                log.error("LLM communication failed", e);
+                return Message.builder().role("assistant").content("[Network Error: " + e.getMessage() + "]").build();
             }
-        } catch (IOException e) {
-            log.error("LLM communication failed", e);
-            return Message.builder().role("assistant").content("[Network Error: " + e.getMessage() + "]").build();
         }
+        return Message.builder().role("assistant").content("All API keys exhausted").build();
     }
 
     @Override
     public void chatStream(List<Message> messages, List<String> tools, StreamCallback callback) {
-        try {
-            String jsonBody = MAPPER.writeValueAsString(buildRequestBody(messages, tools, true));
-            Request request = new Request.Builder().url(baseUrl + "/chat/completions").addHeader("Content-Type", "application/json").addHeader("Authorization", "Bearer " + getEffectiveKey()).post(RequestBody.create(jsonBody, JSON)).build();
-            log.debug("Sending streaming request: model={}, messages={}", modelNameInput, messages.size());
-            AtomicReference<Map<String, StringBuilder>> toolCallBuffers = new AtomicReference<>(new HashMap<>());
-            AtomicReference<String> finishReason = new AtomicReference<>(null);
-            EventSourceListener listener = new EventSourceListener() {
+        int maxRetries = KEY_CHAIN.size() > 1 ? KEY_CHAIN.size() : 1;
+        for (int attempt = 0; attempt < maxRetries; attempt++) {
+            try {
+                String jsonBody = MAPPER.writeValueAsString(buildRequestBody(messages, tools, true));
+                Request request = new Request.Builder().url(baseUrl + "/chat/completions").addHeader("Content-Type", "application/json").addHeader("Authorization", "Bearer " + getEffectiveKey()).post(RequestBody.create(jsonBody, JSON)).build();
+                log.debug("Sending streaming request: model={}, messages={}", modelNameInput, messages.size());
+                AtomicReference<Map<String, StringBuilder>> toolCallBuffers = new AtomicReference<>(new HashMap<>());
+                AtomicReference<String> finishReason = new AtomicReference<>(null);
+                AtomicBoolean keyExhausted = new AtomicBoolean(false);
+                EventSourceListener listener = new EventSourceListener() {
                 @Override
                 public void onEvent(EventSource eventSource, String id, String type, String data) {
                     if ("[DONE]".equals(data)) {
@@ -157,6 +175,14 @@ public class OpenAiModelProvider implements ModelProvider {
                 @Override
                 public void onFailure(EventSource eventSource, Throwable t, Response response) {
                     log.error("SSE connection failed: {}", t.getMessage());
+                    if (keyExhausted.get()) return;
+                    if (response != null && response.code() == 429 && (attempt + 1) < maxRetries) {
+                        KEY_INDEX.incrementAndGet();
+                        keyExhausted.set(true);
+                        log.warn("Stream 429 on attempt " + (attempt + 1) + ", retrying");
+                        chatStream(messages, tools, callback);
+                        return;
+                    }
                     if (finishReason.get() == null) callback.onError(t);
                     else callback.onComplete();
                 }
