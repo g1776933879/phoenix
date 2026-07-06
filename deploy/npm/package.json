@@ -1,0 +1,26 @@
+{
+  "name": "phoenix-agent",
+  "version": "1.0.0",
+  "description": "Phoenix AI Agent - 企业级AI Agent框架",
+  "main": "index.js",
+  "bin": {
+    "phoenix": "./bin/phoenix.js"
+  },
+  "scripts": {
+    "postinstall": "node ./bin/postinstall.js",
+    "phoenix": "node ./bin/phoenix.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/g1776933879/phoenix.git"
+  },
+  "keywords": ["ai", "agent", "phoenix", "ai-agent", "react"],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "bin/",
+    "README.md"
+  ]
+}
