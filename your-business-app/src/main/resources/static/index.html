@@ -1,264 +1,138 @@
-<!DOCTYPE html><html lang="zh-CN"><head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>凤凰 · Phoenix</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.06) transparent}
-:root{--bg:#080810;--s:rgba(255,255,255,0.03);--s2:rgba(255,255,255,0.06);--b:rgba(255,255,255,0.06);--t:#eaeaf0;--t2:#7a7a92;--a:#6c63ff;--a2:#00d4aa;--sc:#34c759;--wa:#ff9f0a;--er:#ff453a;--fs:clamp(12px,1.6vw,14px);--fs2:clamp(10px,1.3vw,12px);--fs3:clamp(8px,1vw,10px);--r:clamp(8px,1vw,12px)}
-body{font-family:-apple-system,BlinkMacSystemFont,'Inter','SF Pro',sans-serif;background:var(--bg);color:var(--t);min-height:100dvh;display:flex;font-size:var(--fs);overflow:hidden;line-height:1.5}
-
-/* Sidebar */
-.sd{width:clamp(200px,16vw,230px);background:var(--s);border-right:1px solid var(--b);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;padding:0}
-.sd .lg{padding:clamp(14px,1.5vw,18px);border-bottom:1px solid var(--b);display:flex;align-items:center;gap:clamp(6px,0.8vw,10px);margin-bottom:4px}
-.sd .lg-i{width:clamp(28px,2.5vw,34px);height:clamp(28px,2.5vw,34px);background:linear-gradient(135deg,var(--a),var(--a2));border-radius:clamp(6px,0.7vw,9px);display:flex;align-items:center;justify-content:center;font-size:clamp(14px,1.5vw,17px);flex-shrink:0}
-.sd .lg-t{font-size:clamp(13px,1.4vw,15px);font-weight:700;letter-spacing:-.3px}
-.sd .lg-s{font-size:clamp(7px,0.8vw,9px);color:var(--t2)}
-.nv{font-size:var(--fs3);color:var(--t2);text-transform:uppercase;letter-spacing:1px;padding:clamp(8px,0.8vw,10px) clamp(10px,1vw,14px) clamp(3px,0.4vw,5px);font-weight:600}
-.ni{display:flex;align-items:center;gap:clamp(8px,0.8vw,10px);padding:clamp(6px,0.7vw,9px) clamp(10px,1vw,14px);margin:1px clamp(6px,0.6vw,8px);border-radius:clamp(6px,0.6vw,8px);font-size:var(--fs);color:var(--t2);cursor:pointer;transition:all .15s;position:relative}
-.ni:hover{background:var(--s2);color:var(--t)}
-.ni.act{background:rgba(108,99,255,0.1);color:var(--a)}
-.ni .bd{margin-left:auto;background:var(--s2);padding:1px clamp(5px,0.5vw,7px);border-radius:10px;font-size:var(--fs3);color:var(--t2)}
-.ni .ic{font-size:clamp(14px,1.5vw,16px);width:clamp(18px,1.8vw,22px);text-align:center}
-.sf{margin-top:auto;padding:clamp(8px,0.8vw,12px);border-top:1px solid var(--b);font-size:var(--fs3);color:var(--t2);text-align:center}
-.sr{display:flex;align-items:center;gap:5px;justify-content:center;margin-bottom:3px}
-.sd-dot{width:5px;height:5px;border-radius:50%;background:var(--sc);box-shadow:0 0 6px var(--sc);animation:pu 2s infinite}
-@keyframes pu{0%,100%{opacity:1}50%{opacity:.4}}
-
-/* Main */
-.mn{flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden}
-.hd{padding:clamp(10px,1vw,14px) clamp(16px,2vw,24px);border-bottom:1px solid var(--b);display:flex;align-items:center;gap:clamp(8px,1vw,12px);flex-shrink:0;background:rgba(8,8,16,0.85);backdrop-filter:blur(20px);position:sticky;top:0;z-index:10}
-.hd h2{font-size:clamp(15px,1.8vw,17px);font-weight:600}
-.hd .ht{font-size:var(--fs2);color:var(--t2);margin-left:auto;opacity:.6}
-
-.tc{flex:1;overflow-y:auto;padding:clamp(12px,1.5vw,20px) clamp(14px,2vw,24px);display:none}
-.tc.act{display:flex;flex-direction:column}
-
-/* Stats bar */
-.stb{display:grid;grid-template-columns:repeat(auto-fill,minmax(clamp(120px,14vw,180px),1fr));gap:clamp(6px,0.8vw,10px);margin-bottom:clamp(10px,1.2vw,16px);flex-shrink:0}
-.st{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:clamp(8px,1vw,14px);text-align:center}
-.st .num{font-size:clamp(18px,2.2vw,24px);font-weight:700}
-.st .lb{font-size:var(--fs3);color:var(--t2);margin-top:2px}
-
-/* Cards */
-.cg{display:grid;grid-template-columns:repeat(auto-fill,minmax(clamp(220px,26vw,300px),1fr));gap:clamp(8px,1vw,12px);margin-bottom:clamp(10px,1.2vw,14px)}
-.c{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:clamp(12px,1.2vw,16px);transition:all .2s}
-.c:hover{border-color:rgba(108,99,255,0.15)}
-.c .c-h{font-size:var(--fs);font-weight:600;margin-bottom:clamp(6px,0.8vw,10px);display:flex;align-items:center;gap:6px}
-.rw{display:flex;justify-content:space-between;padding:clamp(3px,0.4vw,5px) 0;border-bottom:1px solid rgba(255,255,255,0.03);font-size:var(--fs)}
-.rw:last-child{border:none}
-.lb{color:var(--t2)}.va{font-weight:500}
-.tg{display:inline-block;padding:1px 6px;border-radius:4px;font-size:var(--fs3);font-weight:600}
-.tg-g{background:rgba(52,199,89,0.1);color:var(--sc)}
-.tg-o{background:rgba(255,159,10,0.1);color:var(--wa)}
-.tg-p{background:rgba(108,99,255,0.1);color:var(--a)}
-pre{font-size:var(--fs2);background:rgba(0,0,0,0.2);padding:clamp(8px,1vw,12px);border-radius:clamp(6px,0.6vw,8px);line-height:1.6;overflow-x:auto}
-
-/* Chat */
-.ch{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:clamp(4px,0.5vw,8px);padding:4px 0}
-.ms{max-width:90%;padding:clamp(6px,0.8vw,10px) clamp(10px,1.2vw,14px);border-radius:clamp(10px,1.2vw,14px);font-size:var(--fs);line-height:1.55;animation:fi .2s}
-.ms.u{align-self:flex-end;background:rgba(108,99,255,0.12);border:1px solid rgba(108,99,255,0.15);border-bottom-right-radius:3px}
-.ms.a{align-self:flex-start;background:var(--s);border:1px solid var(--b);border-bottom-left-radius:3px}
-.ms .bad{font-size:var(--fs3);font-weight:600;opacity:.5;margin-bottom:2px}
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"><title>凤凰 Phoenix · 管理面板</title><style>
+*{margin:0;padding:0;box-sizing:border-box;scrollbar-width:thin}
+:root{--bg:#0a0a0f;--s:#12121a;--s2:#1a1a26;--b:#2a2a3a;--t:#e8e8f0;--t2:#8888a0;--a:#6c5ce7;--sc:#34c759;--wa:#ff9f0a;--er:#ff453a;--fs:14px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Inter',sans-serif;background:var(--bg);color:var(--t);display:flex;height:100vh;font-size:var(--fs);overflow:hidden}
+aside{width:200px;background:var(--s);border-right:1px solid var(--b);display:flex;flex-direction:column;flex-shrink:0}
+.lg{padding:14px;border-bottom:1px solid var(--b);display:flex;align-items:center;gap:8px}
+.lg-i{width:30px;height:30px;background:linear-gradient(135deg,var(--a),#00d4aa);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px}
+.lg-t{font-size:14px;font-weight:700}.lg-s{font-size:8px;color:var(--t2)}
+.nav{padding:6px}.nl{font-size:9px;color:var(--t2);text-transform:uppercase;padding:6px 8px 2px;font-weight:600}
+.ni{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:6px;color:var(--t2);cursor:pointer;font-size:13px;margin:1px 0}
+.ni:hover{background:var(--s2);color:var(--t)}.ni.a{background:rgba(108,92,231,0.1);color:var(--a)}
+.sf{margin-top:auto;padding:8px;border-top:1px solid var(--b);font-size:9px;color:var(--t2);text-align:center}
+.main{flex:1;display:flex;flex-direction:column;min-width:0}
+.hd{padding:10px 16px;border-bottom:1px solid var(--b);display:flex;align-items:center;flex-shrink:0;background:rgba(10,10,15,0.85);backdrop-filter:blur(20px)}
+.hd h2{font-size:15px;font-weight:600}
+.tab{display:none;flex:1;flex-direction:column}.tab.a{display:flex}
+.area{flex:1;overflow-y:auto;padding:12px 16px}
+.chat{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:6px;padding:6px 0}
+.msg{max-width:88%;padding:8px 12px;border-radius:11px;font-size:14px;line-height:1.5;animation:fi .2s}
+.msg.u{align-self:flex-end;background:rgba(108,92,231,0.12);border:1px solid rgba(108,92,231,0.2);border-bottom-right-radius:3px}
+.msg.a{align-self:flex-start;background:var(--s);border:1px solid var(--b);border-bottom-left-radius:3px}
+.msg .b{font-size:10px;opacity:.5;margin-bottom:2px}
 @keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-.inr{display:flex;gap:6px;padding:clamp(6px,0.8vw,10px) 0 2px;border-top:1px solid var(--b);flex-shrink:0}
-.inr textarea{flex:1;background:var(--s);border:1px solid var(--b);border-radius:clamp(8px,1vw,10px);padding:clamp(8px,0.8vw,10px) clamp(10px,1vw,14px);color:var(--t);font-size:var(--fs);font-family:inherit;resize:none;min-height:clamp(34px,3.5vw,40px);max-height:clamp(60px,6vw,90px);outline:none}
-.inr textarea:focus{border-color:var(--a)}
-.inr button{width:clamp(34px,3.5vw,40px);height:clamp(34px,3.5vw,40px);border-radius:clamp(8px,1vw,10px);background:linear-gradient(135deg,var(--a),var(--a2));border:none;color:#fff;font-size:clamp(14px,1.5vw,16px);cursor:pointer;flex-shrink:0;transition:all .2s}
-.inr button:hover{transform:scale(1.05);opacity:.9}
-
-/* Form */
-.fd{margin-bottom:clamp(6px,0.8vw,10px)}
-.fd label{font-size:var(--fs2);color:var(--t2);display:block;margin-bottom:2px}
-.fd input,.fd select{width:100%;background:var(--s);border:1px solid var(--b);border-radius:clamp(6px,0.6vw,8px);padding:clamp(5px,0.6vw,8px) clamp(8px,0.8vw,12px);color:var(--t);font-size:var(--fs);outline:none}
-.fd input:focus,.fd select:focus{border-color:var(--a)}
-.btn{padding:clamp(5px,0.6vw,8px) clamp(10px,1.2vw,16px);border-radius:clamp(6px,0.6vw,8px);border:none;font-size:var(--fs2);cursor:pointer;transition:all .2s}
+.inp{display:flex;gap:6px;padding:8px 0 4px;border-top:1px solid var(--b);flex-shrink:0}
+.inp textarea{flex:1;background:var(--s);border:1px solid var(--b);border-radius:8px;padding:8px 12px;color:var(--t);font-size:14px;font-family:inherit;resize:none;min-height:36px;max-height:80px;outline:none}
+.inp textarea:focus{border-color:var(--a)}
+.inp button{width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,var(--a),#00d4aa);border:none;color:#fff;font-size:14px;cursor:pointer;flex-shrink:0}
+.g{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
+.c{background:var(--s);border:1px solid var(--b);border-radius:9px;padding:12px}
+.ch{font-size:14px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.r{display:flex;justify-content:space-between;padding:4px 0;font-size:13px;border-bottom:1px solid rgba(255,255,255,0.03)}
+.r:last-child{border:none}.l{color:var(--t2)}.v{font-weight:500}
+.tg{display:inline-block;padding:1px 5px;border-radius:3px;font-size:10px;font-weight:600}
+.tg-g{background:rgba(52,199,89,0.1);color:var(--sc)}
+.f{margin-bottom:8px}.f l{font-size:12px;color:var(--t2);display:block;margin-bottom:2px}
+.f input,.f select{width:100%;background:var(--s2);border:1px solid var(--b);border-radius:6px;padding:6px 10px;color:var(--t);font-size:13px;outline:none}
+.f input:focus{border-color:var(--a)}
+.btn{padding:6px 12px;border-radius:6px;border:none;font-size:12px;cursor:pointer}
 .btn-p{background:linear-gradient(135deg,var(--a),#7b73ff);color:#fff}
-.btn-p:hover{transform:translateY(-1px)}
-.btn-s{background:var(--s2);color:var(--t)}
-.btn-r{display:flex;gap:6px;flex-wrap:wrap}
-
-table{width:100%;border-collapse:collapse;font-size:var(--fs2)}
-th,td{text-align:left;padding:clamp(4px,0.5vw,7px) clamp(6px,0.6vw,10px);border-bottom:1px solid var(--b)}
-th{color:var(--t2);font-weight:500;font-size:var(--fs3);text-transform:uppercase;letter-spacing:.5px}
-
-.toast{position:fixed;bottom:clamp(12px,1.5vw,20px);left:50%;transform:translateX(-50%) translateY(20px);background:rgba(16,16,26,0.95);border:1px solid var(--b);border-radius:clamp(6px,0.6vw,8px);padding:clamp(6px,0.8vw,10px) clamp(12px,1.5vw,20px);font-size:var(--fs);z-index:999;opacity:0;transition:all .3s;backdrop-filter:blur(20px)}
-.toast.sh{opacity:1;transform:translateX(-50%) translateY(0)}
-
-@media(max-width:768px){.sd{width:clamp(180px,55vw,260px);position:fixed;left:0;top:0;bottom:0;z-index:20;transform:translateX(-105%);transition:transform .25s}.sd.op{transform:translateX(0)}.hm{display:flex!important}}
-.hm{display:none;position:fixed;top:clamp(8px,1vw,12px);left:clamp(8px,1vw,12px);z-index:30;width:clamp(30px,3.5vw,36px);height:clamp(30px,3.5vw,36px);background:var(--a);border:none;border-radius:clamp(6px,0.6vw,8px);color:#fff;font-size:clamp(14px,1.5vw,16px);cursor:pointer;align-items:center;justify-content:center}
+.btn-p:hover{transform:translateY(-1px)}.btn-s{background:var(--s2);color:var(--t)}
+.br{display:flex;gap:6px;flex-wrap:wrap}
+pre{font-size:12px;background:rgba(0,0,0,0.3);padding:8px;border-radius:6px;line-height:1.5;overflow-x:auto;max-height:150px;overflow-y:auto}
+.tst{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(20,20,31,0.95);border:1px solid var(--b);border-radius:7px;padding:8px 16px;font-size:13px;z-index:99;opacity:0;transition:all .3s;pointer-events:none}
+.tst.sh{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(max-width:768px){aside{position:fixed;left:0;top:0;bottom:0;z-index:20;transform:translateX(-105%);transition:transform .3s;width:200px}aside.o{transform:translateX(0)}.hm{display:flex!important}}
+.hm{display:none;position:fixed;top:10px;left:10px;z-index:30;width:34px;height:34px;background:var(--a);border:none;border-radius:7px;color:#fff;font-size:15px;cursor:pointer;align-items:center;justify-content:center}
 #ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:15}
 </style></head><body>
+<button class="hm" onclick="tg()">☰</button><div id="ov" onclick="tg()"></div>
+<aside id="sd"><div class="lg"><div class="lg-i">🐦</div><div><div class="lg-t">凤凰</div><div class="lg-s">Phoenix AI</div></div></div><div class="nav">
+<div class="nl">菜单</div>
+<div class="ni a" onclick="go('chat')">💬 对话</div>
+<div class="ni" onclick="go('model')">🤖 模型</div>
+<div class="ni" onclick="go('channels')">📡 渠道</div>
+<div class="ni" onclick="go('evolve')">🧬 进化</div>
+<div class="ni" onclick="go('mcp')">🔗 MCP</div>
+<div class="ni" onclick="go('sessions')">📋 历史</div>
+<div class="ni" onclick="go('info')">⚙️ 信息</div>
+</div><div class="sf">v2.0 · 🐦</div></aside>
+<div class="main"><div class="hd"><h2 id="pt">💬 对话</h2></div>
 
-<button class="hm" onclick="tog()">☰</button><div id="ov" onclick="tog()"></div>
-
-<aside class="sd" id="sd">
-<div class="lg"><div class="lg-i">🐦</div><div><div class="lg-t">凤凰</div><div class="lg-s">Phoenix AI Agent</div></div></div>
-<div class="nv">主菜单</div>
-<div class="ni act" onclick="go('ov')"><span class="ic">💬</span><span>总览</span></div>
-<div class="ni" onclick="go('chat')"><span class="ic">💬</span><span>对话</span><span class="bd" id="mB">0</span></div>
-<div class="ni" onclick="go('sessions')"><span class="ic">📋</span><span>历史</span><span class="bd" id="sB">-</span></div>
-<div class="ni" onclick="go('tools')"><span class="ic">🔧</span><span>工具</span></div>
-<div class="ni" onclick="go('model')"><span class="ic">🤖</span><span>模型</span></div>
-<div class="ni" onclick="go('channels')"><span class="ic">📡</span><span>渠道</span></div>
-<div class="ni" onclick="go('evolve')"><span class="ic">🧬</span><span>进化</span></div>
-<div class="ni" onclick="go('cron')"><span class="ic">⏰</span><span>定时</span></div>
-<div class="ni" onclick="go('plugins')"><span class="ic">🧩</span><span>插件</span></div>
-<div class="ni" onclick="go('mcp')"><span class="ic">🔗</span><span>MCP</span></div>
-<div class="sf"><div class="sr"><span class="sd-dot"></span><span id="stTxt">运行中</span></div>v2.0</div>
-</aside>
-
-<div class="mn">
-<div class="hd"><h2 id="pT">🐦 总览</h2><span class="ht" id="pH">系统状态与统计</span></div>
-
-<!-- Overview -->
-<div class="tc act" id="p-ov">
-<div class="stb" id="statsBar">
-  <div class="st"><div class="num" id="stSess">-</div><div class="lb">会话</div></div>
-  <div class="st"><div class="num" id="stMsg">-</div><div class="lb">消息</div></div>
-  <div class="st"><div class="num" id="stTools">-</div><div class="lb">工具</div></div>
-  <div class="st"><div class="num" id="stChan">15</div><div class="lb">渠道</div></div>
-  <div class="st"><div class="num" id="stMod">1</div><div class="lb">模型</div></div>
-</div>
-<div class="cg">
-  <div class="c"><div class="c-h">⚡ 快速操作</div>
-    <div class="btn-r"><button class="btn btn-p" onclick="go('chat')">💬 新对话</button><button class="btn btn-s" onclick="go('model')">🤖 换模型</button><button class="btn btn-s" onclick="go('cron')">⏰ 定时任务</button></div>
-  </div>
-  <div class="c"><div class="c-h">📊 引擎</div>
-    <div class="rw"><span class="lb">引擎</span><span class="va">ReAct v2.0</span></div>
-    <div class="rw"><span class="lb">记忆</span><span class="va tg tg-g">L1-L4 ✅</span></div>
-    <div class="rw"><span class="lb">MCP</span><span class="va" id="mcpStat">-</span></div>
-  </div>
-  <div class="c"><div class="c-h">🔗 互通</div>
-    <div class="rw"><span class="lb">Hermes</span><span class="va">MCP 就绪</span></div>
-    <div class="rw"><span class="lb">Codex</span><span class="va">MCP 就绪</span></div>
-    <div class="rw"><span class="lb">OpenClaw</span><span class="va">MCP 就绪</span></div>
-  </div>
-</div>
+<div class="tab a" id="p-chat">
+<div class="chat" id="ms"></div>
+<div class="inp"><textarea id="in" rows="1" placeholder="发消息..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sd()}"></textarea><button onclick="sd()">➤</button></div>
 </div>
 
-<!-- Chat -->
-<div class="tc" id="p-chat">
-<div class="ch" id="msgs"></div>
-<div class="inr"><textarea id="inp" rows="1" placeholder="给凤凰发消息..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();snd()}"></textarea><button onclick="snd()">➤</button></div>
-</div>
+<div class="tab" id="p-model"><div class="area"><div class="g">
+<div class="c"><div class="ch">🤖 模型配置</div>
+<div class="f"><l>模型名称</l><input id="mn" value="deepseek-v4-flash"></div>
+<div class="f"><l>API 地址</l><input id="mu" value="https://token.sensenova.cn/v1"></div>
+<div class="f"><l>API Key</l><input id="mk" type="password"></div>
+<div class="f"><l>最大 Tokens</l><input id="mt" value="32768"></div>
+<div class="br"><button class="btn btn-p" onclick="svM()">💾 保存</button><button class="btn btn-s" onclick="tsM()">🔍 测试</button></div>
+<div id="mr" style="margin-top:6px;font-size:12px;color:var(--t2)"></div></div>
+<div class="c"><div class="ch">⚡ 预设</div><select onchange="lp(this.value)" style="width:100%;background:var(--s2);border:1px solid var(--b);border-radius:6px;padding:6px 10px;color:var(--t);font-size:13px;outline:none">
+<option value="">— 自定义 —</option><option value="sd">SenseNova DeepSeek-v4</option><option value="sf">SenseNova flash-lite</option><option value="su">SenseNova U1-fast</option>
+<option value="ds">DeepSeek Chat</option><option value="gpt4">GPT-4o</option><option value="claude">Claude 4</option></select></div>
+</div></div></div>
 
-<!-- Sessions -->
-<div class="tc" id="p-sessions">
-<div id="sessList">加载中...</div>
-</div>
+<div class="tab" id="p-channels"><div class="area"><div class="g">
+<div class="c"><div class="ch">🌐 Web 界面</div><div class="r"><span class="l">状态</span><span class="v tg tg-g">运行中</span></div><div class="r"><span class="l">端口</span><span class="v">8080</span></div></div>
+<div class="c"><div class="ch">📱 Telegram</div><div class="f"><l>Bot Token</l><input id="tg" placeholder="123:ABC"></div><button class="btn btn-p" onclick="sv('tg','tg')">保存</button></div>
+<div class="c"><div class="ch">🐦 Discord</div><div class="f"><l>Bot Token</l><input id="dc" placeholder="Discord Token"></div><button class="btn btn-p" onclick="sv('dc','dc')">保存</button></div>
+<div class="c"><div class="ch">📢 飞书/钉钉/Slack</div><div class="r"><span class="l">状态</span><span class="v">Webhook 就绪</span></div><button class="btn btn-s" onclick="uc('配置渠道')">对话配置</button></div>
+</div></div></div>
 
-<!-- Tools -->
-<div class="tc" id="p-tools">
-<div class="cg">
-<div class="c"><div class="c-h">🔧 工具</div><div id="toolInfo">加载中...</div></div>
-<div class="c"><div class="c-h">🔌 MCP</div><div id="mcpInfo">-</div></div>
-</div></div>
+<div class="tab" id="p-evolve"><div class="area"><div class="g">
+<div class="c"><div class="ch">🧬 自进化</div><div class="br"><button class="btn btn-p" onclick="uc('执行自我进化')">🚀 进化</button><button class="btn btn-s" onclick="uc('全面自检')">🔍 自检</button></div></div>
+<div class="c"><div class="ch">🛠️ 技能</div><div class="f"><l>名称</l><input id="sn" placeholder="code_review"></div><div class="f"><l>描述</l><input id="sd2" placeholder="审查代码安全"></div><button class="btn btn-p" onclick="uc('创建技能:'+g('sn')+' '+g('sd2'))">✨ 创造</button></div>
+</div></div></div>
 
-<!-- Model -->
-<div class="tc" id="p-model">
-<div class="cg">
-<div class="c"><div class="c-h">🤖 模型</div>
-<div class="fd"><label>模型</label><input id="mN" value="deepseek-v4-flash"></div>
-<div class="fd"><label>API</label><input id="mU" value="https://token.sensenova.cn/v1"></div>
-<div class="fd"><label>Key</label><input id="mK" type="password"></div>
-<div class="btn-r"><button class="btn btn-p" onclick="svM()">💾 保存</button><button class="btn btn-s" onclick="tstM()">🔍 测试</button></div>
-<div id="mR" style="margin-top:6px;font-size:var(--fs2);color:var(--t2)"></div></div>
-<div class="c"><div class="c-h">⚡ 预设</div>
-<select onchange="qM(this.value)" style="width:100%;background:var(--s);border:1px solid var(--b);border-radius:6px;padding:6px 10px;color:var(--t);font-size:var(--fs);outline:none">
-<option value="">自定义</option><option value="ds">DeepSeek</option><option value="gpt4">GPT-4o</option>
-<option value="claude">Claude 4</option><option value="qwen">Qwen</option><option value="groq">Groq Llama</option>
-<option value="glm">智谱 GLM</option></select></div>
-</div></div>
+<div class="tab" id="p-mcp"><div class="area"><div class="g">
+<div class="c"><div class="ch">🔗 MCP 互通</div><div class="r"><span class="l">Hermes</span><span class="v tg tg-g">MCP</span></div><div class="r"><span class="l">Codex</span><span class="v tg tg-g">MCP</span></div><div class="r"><span class="l">OpenClaw</span><span class="v tg tg-g">MCP</span></div><div class="r"><span class="l">端点</span><span class="v">POST /mcp</span></div></div>
+<div class="c"><div class="ch">🔗 注册远程</div><div class="f"><l>名称</l><input id="mn2" placeholder="hermes"></div><div class="f"><l>地址</l><input id="ma" placeholder="http://localhost:11435"></div><button class="btn btn-p" onclick="rM()">注册</button><div id="mr2" style="margin-top:4px;font-size:12px;color:var(--t2)"></div></div>
+</div></div></div>
 
-<!-- Channels -->
-<div class="tc" id="p-channels">
-<div class="cg">
-<div class="c"><div class="c-h">🌐 Web</div><div class="rw"><span class="lb">状态</span><span class="va tg tg-g">✅ 运行</span></div></div>
-<div class="c"><div class="c-h">📱 Telegram</div><div class="fd"><label>Token</label><input id="tgT" placeholder="123:ABC"></div><button class="btn btn-p" onclick="svTG()">保存</button></div>
-<div class="c"><div class="c-h">🐦 Discord</div><div class="rw"><span class="lb">状态</span><span class="va">Webhook 就绪</span></div></div>
-<div class="c"><div class="c-h">💬 Slack</div><div class="rw"><span class="lb">状态</span><span class="va">Webhook 就绪</span></div></div>
-<div class="c"><div class="c-h">💬 微信</div><div class="rw"><span class="lb">状态</span><span class="va">扫码登录</span></div></div>
-<div class="c"><div class="c-h">🏢 企微</div><div class="rw"><span class="lb">状态</span><span class="va tg tg-g">就绪</span></div></div>
-<div class="c"><div class="c-h">📢 飞书</div><div class="rw"><span class="lb">状态</span><span class="va">Webhook</span></div></div>
-<div class="c"><div class="c-h">📢 钉钉</div><div class="rw"><span class="lb">状态</span><span class="va">Webhook</span></div></div>
-</div></div>
+<div class="tab" id="p-sessions"><div class="area"><div id="sl">加载中...</div></div></div>
 
-<!-- Evolve -->
-<div class="tc" id="p-evolve">
-<div class="cg">
-<div class="c"><div class="c-h">🧬 进化</div><div class="btn-r"><button class="btn btn-p" onclick="ev()">🚀 执行进化</button><button class="btn btn-s" onclick="an()">🔍 代码分析</button></div><div id="eR" style="margin-top:8px;font-size:var(--fs2);color:var(--t2);white-space:pre-wrap;max-height:200px;overflow-y:auto"></div></div>
-<div class="c"><div class="c-h">🛠️ 技能</div><div class="fd"><label>名称</label><input id="sN" placeholder="code_review"></div><div class="fd"><label>描述</label><input id="sD" placeholder="审查代码安全"></div><button class="btn btn-p" onclick="mkS()">✨ 创造</button><div id="sR" style="margin-top:4px;font-size:var(--fs2);color:var(--t2)"></div></div>
-</div></div>
+<div class="tab" id="p-info"><div class="area"><div class="g">
+<div class="c"><div class="ch">⚙️ 系统信息</div><div class="r"><span class="l">引擎</span><span class="v">ReAct v2.0</span></div><div class="r"><span class="l">会话数</span><span class="v" id="sc">-</span></div><div class="r"><span class="l">消息数</span><span class="v" id="sm">-</span></div><div class="r"><span class="l">状态</span><span class="v tg tg-g">在线</span></div></div>
+<div class="c"><div class="ch">💻 命令参考</div><pre>phoenix     终端对话
+phoenix2    启动服务
+chat "你好" 快速对话</pre></div>
+</div></div></div>
 
-<!-- Cron -->
-<div class="tc" id="p-cron">
-<div class="cg">
-<div class="c"><div class="c-h">⏰ 定时任务</div>
-<div class="fd"><label>名称</label><input id="cN" placeholder="日报"></div>
-<div class="fd"><label>提示词</label><input id="cP" placeholder="生成今日销售报告"></div>
-<div class="fd"><label>时间</label><input id="cS" placeholder="每天早上9点"></div>
-<div class="btn-r"><button class="btn btn-p" onclick="addCron()">➕ 添加</button></div>
-<div id="cR" style="margin-top:6px;font-size:var(--fs2);color:var(--t2)"></div></div>
-<div class="c"><div class="c-h">📋 任务列表</div><div id="cronList">暂无定时任务</div></div>
-</div></div>
-
-<!-- Plugins -->
-<div class="tc" id="p-plugins">
-<div class="cg">
-<div class="c"><div class="c-h">🧩 插件</div><div id="pluginList">暂无插件</div></div>
-</div></div>
-
-<!-- MCP -->
-<div class="tc" id="p-mcp">
-<div class="cg">
-<div class="c"><div class="c-h">🔗 MCP 互通</div>
-<div class="rw"><span class="lb">Hermes</span><span class="va tg tg-g">MCP 就绪</span></div>
-<div class="rw"><span class="lb">Codex</span><span class="va tg tg-g">MCP 就绪</span></div>
-<div class="rw"><span class="lb">OpenClaw</span><span class="va tg tg-g">MCP 就绪</span></div>
-<div style="margin-top:8px;font-size:var(--fs2);color:var(--t2)">端点: POST /mcp</div>
-<div class="fd" style="margin-top:6px"><label>注册远程 MCP</label><input id="mcpUrl" placeholder="http://localhost:11435"></div>
-<button class="btn btn-p" onclick="regMCP()">🔗 注册</button>
-<div id="mcpRes" style="margin-top:4px;font-size:var(--fs2);color:var(--t2)"></div></div>
-</div></div>
-
-</div>
-<div class="toast" id="toast"></div>
-
+</div><div class="tst" id="tst"></div>
 <script>
-const H=location.protocol+'//'+location.host;
-let bf=false;
-function tog(){document.getElementById('sd').classList.toggle('op');document.getElementById('ov').classList.toggle('op')}
-function go(n){document.querySelectorAll('.tc').forEach(e=>e.classList.remove('act'));document.querySelectorAll('.ni').forEach(e=>e.classList.remove('act'));document.getElementById('p-'+n).classList.add('act');document.querySelector(`.ni[onclick*="'${n}'"]`).classList.add('act');if(window.innerWidth<=768)tog();const T={'ov':'🐦 总览','chat':'💬 对话','sessions':'📋 历史','tools':'🔧 工具','model':'🤖 模型','channels':'📡 渠道','evolve':'🧬 进化','cron':'⏰ 定时','plugins':'🧩 插件','mcp':'🔗 MCP'};document.getElementById('pT').textContent=T[n]||'🐦 凤凰'}
+const H=location.protocol+'//'+location.host;let bf=false;
+function tg(){document.getElementById('sd').classList.toggle('o');document.getElementById('ov').classList.toggle('o')}
+function go(n){document.querySelectorAll('.ni').forEach(e=>e.classList.remove('a'));document.querySelectorAll('.tab').forEach(e=>e.classList.remove('a'));document.getElementById('p-'+n).classList.add('a');document.querySelector(`.ni[onclick*="'${n}'"]`).classList.add('a');if(innerWidth<=768)tg();const T={'chat':'💬 对话','model':'🤖 模型','channels':'📡 渠道','evolve':'🧬 进化','mcp':'🔗 MCP','sessions':'📋 历史','info':'⚙️ 信息'};document.getElementById('pt').textContent=T[n];if(n==='sessions')loadSe();if(n==='info')loadIn()}
+function ts(m){let t=document.getElementById('tst');t.textContent=m;t.classList.add('sh');setTimeout(()=>t.classList.remove('sh'),2000)}
+function g(id){return document.getElementById(id).value}
+function uc(t){go('chat');document.getElementById('in').value=t;document.querySelector('#inp textarea').focus();sd()}
 
 // Chat
-const M=document.getElementById('msgs'),I=document.getElementById('inp');
-function addMsg(t,r){let d=document.createElement('div');d.className='ms '+r;let b=document.createElement('div');b.className='bad';b.textContent={u:'你',a:'凤凰',s:'系统'}[r[0]]||r;d.appendChild(b);let c=document.createElement('div');c.textContent=t;d.appendChild(c);M.appendChild(d);M.scrollTop=M.scrollHeight;return d}
-async function snd(){let t=I.value.trim();if(!t||bf)return;bf=true;I.value='';addMsg(t,'u');let l=addMsg('⏳...','a');try{let r=await fetch(H+'/api/agent/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:t})});let d=await r.json();l.remove();addMsg(d.content||'(空)','a')}catch(e){l.remove();addMsg('❌ '+e.message,'s')}bf=false;loadStats()}
+const M=document.getElementById('ms'),I=document.getElementById('in');
+function am(t,r){let d=document.createElement('div');d.className='msg '+r;let b=document.createElement('div');b.className='b';b.textContent={u:'你',a:'凤凰'}[r[0]]||r;d.appendChild(b);let c=document.createElement('div');c.textContent=t;d.appendChild(c);M.appendChild(d);M.scrollTop=M.scrollHeight;return d}
+async function sd(){let t=I.value.trim();if(!t||bf)return;bf=true;I.value='';am(t,'u');let l=am('⏳...','a');try{let r=await fetch(H+'/api/agent/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:t})});let d=await r.json();l.remove();am(d.content||'(空)','a')}catch(e){l.remove();am('❌ '+e.message,'s')}bf=false}
 
-// Stats
-async function loadStats(){try{let r=await fetch(H+'/api/sessions');let d=await r.json();document.getElementById('stSess').textContent=d.length;document.getElementById('sB').textContent=d.length;let mc=0;d.forEach(s=>mc+=s.messageCount||0);document.getElementById('stMsg').textContent=mc;document.getElementById('stTools').textContent='?'}catch(e){}}
-async function loadSess(){let el=document.getElementById('sessList');el.innerHTML='⏳...';try{let r=await fetch(H+'/api/sessions');let d=await r.json();el.innerHTML='';if(!d.length){el.innerHTML='<div style="color:var(--t2)">暂无对话</div>';return}d.forEach(s=>{let di=document.createElement('div');di.style.cssText='display:flex;align-items:center;gap:6px;padding:8px 10px;border-radius:8px;cursor:pointer;background:var(--s);border:1px solid var(--b);margin-bottom:4px';di.innerHTML=`<span>💬</span><span style="flex:1">${s.title}</span><span style="font-size:var(--fs2);color:var(--t2)">${s.messageCount||0}条</span>`;di.onclick=()=>{go('chat')};el.appendChild(di)})}catch(e){el.innerHTML='<div style="color:var(--t2)">加载失败</div>'}}
-loadSess();loadStats();
+// Sessions
+async function loadSe(){let el=document.getElementById('sl');el.innerHTML='⏳...';try{let r=await fetch(H+'/api/sessions');let d=await r.json();el.innerHTML='';if(!d.length){el.innerHTML='<div style="color:var(--t2)">暂无对话</div>';return}d.forEach(s=>{let c=document.createElement('div');c.style.cssText='display:flex;align-items:center;gap:6px;padding:8px 10px;border-radius:6px;cursor:pointer;background:var(--s);border:1px solid var(--b);margin-bottom:4px';c.innerHTML=`<span>💬</span><span style="flex:1">${s.title}</span><span style="font-size:11px;color:var(--t2)">${s.messageCount}条</span>`;c.onclick=()=>{ts('已选择: '+s.title)};el.appendChild(c)})}catch(e){el.innerHTML='<div style="color:var(--t2)">加载失败</div>'}}
+
+// Info
+async function loadIn(){try{let r=await fetch(H+'/api/sessions');let d=await r.json();document.getElementById('sc').textContent=d.length;let mc=0;d.forEach(s=>mc+=s.messageCount||0);document.getElementById('sm').textContent=mc}catch(e){}}
+loadIn();
 
 // Model
-function svM(){localStorage.setItem('pmm_m',JSON.stringify({n:document.getElementById('mN').value,u:document.getElementById('mU').value,k:document.getElementById('mK').value}));toast('✅ 已保存')}
-async function tstM(){let e=document.getElementById('mR');e.textContent='⏳...';try{let r=await fetch(H+'/api/agent/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:'ping'})});let d=await r.json();e.innerHTML='✅ '+d.content.substring(0,60)}catch(x){e.textContent='❌ '+x.message}}
-function qM(v){const P={'ds':{n:'deepseek-chat',u:'https://api.deepseek.com/v1'},'gpt4':{n:'gpt-4o',u:'https://api.openai.com/v1'},'claude':{n:'claude-sonnet-4',u:'https://api.anthropic.com/v1'},'qwen':{n:'qwen2.5:7b',u:'http://localhost:11434/v1'},'groq':{n:'llama3-70b-8192',u:'https://api.groq.com/openai/v1'},'glm':{n:'glm-5',u:'https://open.bigmodel.cn/api/paas/v4'}};if(P[v]){document.getElementById('mN').value=P[v].n;document.getElementById('mU').value=P[v].u;toast('⚡ 已切换')}}
+function svM(){localStorage.setItem('phx_model',JSON.stringify({n:g('mn'),u:g('mu'),k:g('mk'),t:g('mt')}));ts('✅ 已保存')}
+async function tsM(){let e=document.getElementById('mr');e.textContent='⏳...';try{let r=await fetch(H+'/api/agent/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:'ping 回OK'})});let d=await r.json();e.innerHTML='✅ '+(d.content||'').substring(0,60);ts('✅ 测试通过')}catch(x){e.textContent='❌ '+x.message;ts('❌ 测试失败')}}
+function lp(v){const P={'sd':{n:'deepseek-v4-flash',u:'https://token.sensenova.cn/v1'},'sf':{n:'sensenova-6.7-flash-lite',u:'https://token.sensenova.cn/v1'},'su':{n:'sensenova-u1-fast',u:'https://token.sensenova.cn/v1'},'ds':{n:'deepseek-chat',u:'https://api.deepseek.com/v1'},'gpt4':{n:'gpt-4o',u:'https://api.openai.com/v1'},'claude':{n:'claude-sonnet-4',u:'https://api.anthropic.com/v1'}};if(P[v]){document.getElementById('mn').value=P[v].n;document.getElementById('mu').value=P[v].u;ts('⚡ '+v)}}
 
 // Channels
-function svTG(){let t=document.getElementById('tgT').value.trim();if(!t)return toast('❌ 输入Token');localStorage.setItem('pmm_tg',t);toast('✅ 已保存')}
-
-// Evolve
-async function ev(){let e=document.getElementById('eR');e.textContent='🧬...';try{let r=await fetch(H+'/api/evolution/evolve',{method:'POST'});let d=await r.json();e.textContent=JSON.stringify(d,null,2);toast('✅ 完成')}catch(x){e.textContent='❌ '+x.message}}
-async function an(){let e=document.getElementById('eR');e.textContent='🔍...';try{let r=await fetch(H+'/api/evolution/analyze',{method:'POST'});let d=await r.json();e.textContent=JSON.stringify(d,null,2)}catch(x){e.textContent='❌ '+x.message}}
-async function mkS(){let n=document.getElementById('sN').value.trim(),d=document.getElementById('sD').value.trim();if(!n||!d)return toast('❌ 填写');let e=document.getElementById('sR');e.textContent='⏳...';try{let r=await fetch(H+'/api/agent/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:'创建技能 '+n+'：'+d})});let o=await r.json();e.textContent=o.content}catch(x){e.textContent='❌ '+x.message}}
-
-// Cron
-async function addCron(){let n=document.getElementById('cN').value.trim(),p=document.getElementById('cP').value.trim(),s=document.getElementById('cS').value.trim();if(!n||!p||!s)return toast('❌ 填写所有字段');try{let r=await fetch(H+'/api/cron',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:n,prompt:p,schedule:s})});let d=await r.json();document.getElementById('cR').innerHTML='✅ 已创建: '+d.id;toast('✅ 定时任务已添加')}catch(x){document.getElementById('cR').textContent='❌ '+x.message}}
+function sv(id,k){let v=g(id);if(!v)return ts('❌ 输入');localStorage.setItem('phx_'+k,v);ts('✅ 已保存')}
 
 // MCP
-async function regMCP(){let u=document.getElementById('mcpUrl').value.trim();if(!u)return toast('❌ 输入URL');document.getElementById('mcpRes').textContent='⏳...';try{let r=await fetch(H+'/api/agent/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:'注册MCP服务器 remote 地址为 '+u})});let d=await r.json();document.getElementById('mcpRes').textContent=d.content}catch(x){document.getElementById('mcpRes').textContent='❌ '+x.message}}
-
-function toast(m){let t=document.getElementById('toast');t.textContent=m;t.classList.add('sh');setTimeout(()=>t.classList.remove('sh'),2000)}
-setInterval(loadStats,30000);
+async function rM(){let n=g('mn2'),a=g('ma');if(!n||!a)return ts('❌ 填写');document.getElementById('mr2').textContent='⏳...';try{let r=await fetch(H+'/api/agent/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:'注册MCP '+n+' 地址 '+a})});let d=await r.json();document.getElementById('mr2').textContent=d.content}catch(x){document.getElementById('mr2').textContent='❌ '+x.message}}
 </script>
 </body></html>
